@@ -108,7 +108,7 @@ class _MainState extends ConsumerState<Main> {
                       }),
                   AddExpenseButton(
                       icon: 'assets/icons/lifestyle.png',
-                      text: 'Lifestyle',
+                      text: 'Fun',
                       onPressed: () {
                         showModalBottomSheet(
                             context: context,
@@ -120,7 +120,64 @@ class _MainState extends ConsumerState<Main> {
                       icon: 'assets/icons/more.png',
                       text: 'More',
                       passthrough: true,
-                      onPressed: () {}),
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Center(
+                                  child: SizedBox(
+                                height: 130,
+                                width: 300,
+                                child: Card(
+                                  color: Colors.white,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      AddExpenseButton(
+                                          icon:
+                                              'assets/icons/shopping-cart.png',
+                                          text: 'Shopping',
+                                          onPressed: () {
+                                            showModalBottomSheet(
+                                                context: context,
+                                                builder: (context) =>
+                                                    const AddExpenseDialog(
+                                                      expenseType:
+                                                          ExpenseType.shopping,
+                                                    ));
+                                          }),
+                                      AddExpenseButton(
+                                          icon: 'assets/icons/rent.png',
+                                          text: 'Rent',
+                                          onPressed: () {
+                                            showModalBottomSheet(
+                                                context: context,
+                                                builder: (context) =>
+                                                    const AddExpenseDialog(
+                                                      expenseType:
+                                                          ExpenseType.rent,
+                                                    ));
+                                          }),
+                                      AddExpenseButton(
+                                          icon: 'assets/icons/more.png',
+                                          text: 'Others',
+                                          onPressed: () {
+                                            showModalBottomSheet(
+                                                context: context,
+                                                builder: (context) =>
+                                                    const AddExpenseDialog(
+                                                      expenseType:
+                                                          ExpenseType.others,
+                                                    ));
+                                          }),
+                                    ],
+                                  ),
+                                ),
+                              ));
+                            });
+                      }),
                 ]),
                 const SizedBox(height: 30),
               ],
@@ -141,7 +198,7 @@ class _MainState extends ConsumerState<Main> {
                   Expanded(
                     child: Column(children: [
                       const SizedBox(height: 20),
-                      const Text('Expenses',
+                      const Text('Recently Added',
                           style: TextStyle(
                             fontSize: 20,
                           )),
@@ -152,8 +209,12 @@ class _MainState extends ConsumerState<Main> {
                           itemCount:
                               ref.watch(expenseListProvider).expenses.length,
                           itemBuilder: (context, index) {
-                            final expense =
-                                ref.watch(expenseListProvider).expenses[index];
+                            List<Expense> sortedExpenses =
+                                ref.watch(expenseListProvider).expenses;
+                            sortedExpenses
+                                .sort((a, b) => b.date.compareTo(a.date));
+
+                            final expense = sortedExpenses[index];
                             return ListTile(
                               tileColor: Colors.white30,
                               title: Text(expense.title),

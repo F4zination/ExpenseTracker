@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class UserProvider extends ChangeNotifier {
-  String username = '';
+  String username = 'User';
 
   UserProvider() {
     _loadUsername();
@@ -13,7 +13,7 @@ class UserProvider extends ChangeNotifier {
 
   void _loadUsername() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    username = prefs.getString('username') ?? '';
+    username = prefs.getString('username') ?? 'User';
     notifyListeners();
   }
 

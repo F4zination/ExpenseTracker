@@ -1,67 +1,38 @@
-import 'dart:io';
-
-import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:expensetracker/models/expense.dart';
+import 'package:flutter/material.dart';
 import 'package:expensetracker/controller/database_controller.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 
-class MetricCategoryPage extends StatefulWidget {
-  const MetricCategoryPage({super.key});
+class MetricCategoryScreen extends StatefulWidget {
+  const MetricCategoryScreen({Key? key}) : super(key: key);
 
   @override
-  State<MetricCategoryPage> createState() => _MetricCategoryPageState();
+  State<MetricCategoryScreen> createState() => _MetricCategoryScreenState();
 }
 
-class _MetricCategoryPageState extends State<MetricCategoryPage> {
-  List<double> totalExpensesByType = [];
-  bool loading = true;
-  List<BarChartGroupData> barGroupData = [];
+class _MetricCategoryScreenState extends State<MetricCategoryScreen> {
+  List<List<Expense>> expensesByType = [];
 
-  void loadExpenses(DatabaseController databaseController) async {
+  void loadExpenses() async {
+    DatabaseController databaseController = DatabaseController();
     for (ExpenseType type in ExpenseType.values) {
-      await databaseController
-          .loadExpensesByTypeAndMonth(
-              type, DateTime.now().month.toString().padLeft(2, '0'))
-          .then((value) {
-        double total = value.fold(
-            0, (previousValue, element) => previousValue + element.amount);
-        totalExpensesByType.add(total);
+      await databaseController.loadExpenseByType(type).then((value) {
+        expensesByType.add(value);
       });
     }
+    setState(() {});
+  }
 
-    setState(() {
-      barGroupData = totalExpensesByType
-          .asMap()
-          .entries
-          .map((e) => BarChartGroupData(
-                x: e.key,
-                barRods: [
-                  BarChartRodData(
-                      toY: e.value,
-                      color: categoryColors[ExpenseType.values[e.key]],
-                      width: 20,
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10)))
-                ],
-              ))
-          .toList();
-    });
-    // wait for 0.5 sec and then set loading to false
-    Future.delayed(const Duration(milliseconds: 500), () {
-      setState(() {
-        loading = false;
-      });
-    });
+  String get dateFormated {
+    DateTime now = DateTime.now();
+    return DateFormat('MMMM-yy').format(now);
   }
 
   @override
   void initState() {
     super.initState();
-    DatabaseController databaseController = DatabaseController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      loadExpenses(databaseController);
+      loadExpenses();
     });
   }
 
@@ -69,95 +40,81 @@ class _MetricCategoryPageState extends State<MetricCategoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Metric Category'),
+        title: Text('Category Metrics $dateFormated'),
       ),
-      body: Center(
-          child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(loading ? 'Loading...' : 'Total Expenses by Category',
-                style: const TextStyle(fontSize: 20, color: Colors.black38)),
-            const SizedBox(height: 50),
-            loading
-                ? const Column(
-                    children: [
-                      SpinKitDoubleBounce(
-                        color: Color(0xFF5D9FAE),
-                        size: 50.0,
-                      ),
-                      SizedBox(height: 20),
-                      Text('Oh boy, this is taking a while...',
-                          style: TextStyle(
-                              color: Color(0xFF5D9FAE), fontSize: 20)),
-                    ],
-                  )
-                : AspectRatio(
-                    aspectRatio: 0.8,
-                    child: BarChart(
-                      BarChartData(
-                        barGroups: barGroupData,
-                        alignment: BarChartAlignment.spaceEvenly,
-                        titlesData: FlTitlesData(
-                          rightTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false)),
-                          topTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false)),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 100,
-                              getTitlesWidget: (value, meta) {
-                                return SideTitleWidget(
-                                    space: 20,
-                                    axisSide: meta.axisSide,
-                                    child: Column(
-                                      children: [
-                                        Icon(categoryIcons[
-                                            ExpenseType.values[value.toInt()]]),
-                                        const SizedBox(
-                                          height: 30,
-                                        ),
-                                        Transform.rotate(
-                                            angle: 3.14 / 2,
-                                            child: Text(ExpenseType
-                                                .values[value.toInt()].name)),
-                                      ],
-                                    ));
-                              },
-                            ),
-                          ),
-                        ),
-                        backgroundColor: Colors.grey[200],
-                        barTouchData: BarTouchData(
-                          touchTooltipData: BarTouchTooltipData(getTooltipItem:
-                              (group, groupIndex, rod, rodIndex) {
-                            return BarTooltipItem(
-                                '${rod.toY}€',
-                                const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold));
-                          }),
-                        ),
-                        gridData: const FlGridData(
-                          show: true,
-                          drawHorizontalLine: true,
-                          drawVerticalLine: false,
-                        ),
-                        maxY: (totalExpensesByType.reduce((value, element) =>
-                                    value > element ? value : element) *
-                                1.2)
-                            .floor()
-                            .toDouble(),
-                      ),
-                      swapAnimationCurve: Curves.easeInOut,
-                      swapAnimationDuration: const Duration(milliseconds: 150),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: expensesByType.length,
+              itemBuilder: (context, index) {
+                ExpenseType type = ExpenseType.values[index];
+                List<Expense> expenses = expensesByType[index]
+                    .where((element) => element.type == type)
+                    .toList();
+                String typeString = type.toString().split('.').last;
+                String typeFormatedString = typeString[0].toUpperCase() +
+                    typeString.substring(1).replaceAll('_', ' ');
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(typeFormatedString,
+                          style: const TextStyle(
+                            fontSize: 25,
+                            color: Colors.black,
+                          )),
                     ),
+                    ListView.builder(
+                      physics:
+                          const NeverScrollableScrollPhysics(), // to disable scrolling inside nested ListView
+                      shrinkWrap: true, // necessary to display all children
+                      itemCount: expenses.length,
+                      itemBuilder: (context, expenseIndex) {
+                        Expense expense = expenses[expenseIndex];
+                        return ListTile(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: const BorderSide(color: Colors.black12)),
+                          title: Text(expense.title,
+                              style: const TextStyle(
+                                  fontSize: 13, color: Colors.black38)),
+                          trailing:
+                              Text('€${expense.amount.toStringAsFixed(2)}'),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                const Text(
+                  'Total Expenses',
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.black,
                   ),
-          ],
-        ),
-      )),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '€${expensesByType.expand((element) => element).fold(0.0, (previousValue, element) => previousValue + element.amount).toStringAsFixed(2)}',
+                  style: const TextStyle(
+                    fontSize: 25,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

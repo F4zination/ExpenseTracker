@@ -56,6 +56,11 @@ class DatabaseController {
     db.delete('expenses', where: 'id = ?', whereArgs: [id]);
   }
 
+  void deleteAllExpenses() async {
+    final db = await database;
+    db.delete('expenses');
+  }
+
   Future<List<Expense>> loadCurrentMonthExpenses() async {
     final db = await database;
     String month = DateTime.now().month.toString().padLeft(2, '0');
@@ -81,6 +86,23 @@ class DatabaseController {
   Future<List<Expense>> loadAllExpenses() async {
     final db = await database;
     final results = await db.query('expenses');
+    print(results);
+    return results.map((e) {
+      return Expense.withID(
+        id: e['id'] as String,
+        title: e['title'] as String,
+        amount: e['amount'] as double,
+        date: DateTime.parse(e['date'] as String),
+        type: ExpenseType.values
+            .firstWhere((element) => element.toString() == e['type']),
+      );
+    }).toList();
+  }
+
+  Future<List<Expense>> loadExpenseByType(ExpenseType type) async {
+    final db = await database;
+    final results = await db
+        .query('expenses', where: 'type = ?', whereArgs: [type.toString()]);
     return results.map((e) {
       return Expense.withID(
         id: e['id'] as String,
