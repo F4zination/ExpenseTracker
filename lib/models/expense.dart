@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 const Uuid _uuid = Uuid();
 
 enum ExpenseType {
-  income,
   food,
   transport,
   fun,
@@ -23,7 +22,6 @@ const categoryColors = {
 };
 
 const categoryIcons = {
-  ExpenseType.income: Icons.attach_money,
   ExpenseType.food: Icons.fastfood,
   ExpenseType.fun: Icons.sports_esports,
   ExpenseType.transport: Icons.directions_bus,

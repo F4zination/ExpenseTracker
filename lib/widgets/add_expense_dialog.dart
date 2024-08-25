@@ -1,21 +1,22 @@
+import 'package:expensetracker/provider/expense_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:expensetracker/models/expense.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AddExpense extends StatefulWidget {
-  const AddExpense({super.key, required this.addExpense});
+class AddExpenseDialog extends ConsumerStatefulWidget {
+  const AddExpenseDialog({super.key, required this.expenseType});
 
-  final void Function(Expense) addExpense;
+  final ExpenseType expenseType;
 
   @override
-  State<AddExpense> createState() => _AddExpenseState();
+  ConsumerState<AddExpenseDialog> createState() => _AddExpenseState();
 }
 
-class _AddExpenseState extends State<AddExpense> {
+class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
   ExpenseType selectedType = ExpenseType.food;
-  late final Database db;
+  late final ExpenseListProvider _expenseListProvider;
 
   @override
   void dispose() {
@@ -27,16 +28,16 @@ class _AddExpenseState extends State<AddExpense> {
   @override
   void initState() {
     super.initState();
-    openDatabase('expenses.db').then((value) {
-      db = value;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _expenseListProvider = ref.watch(expenseListProvider);
     });
   }
 
   double get amount {
     final amountText = amountController.text;
-    String amount_withoutComma = amountText.replaceAll(',', '.');
+    String amountWithoutComma = amountText.replaceAll(',', '.');
     // round the amount to 2 decimal places
-    return double.tryParse(amount_withoutComma) ?? 0;
+    return double.tryParse(amountWithoutComma) ?? 0;
   }
 
   void submitExpense() {
@@ -58,10 +59,10 @@ class _AddExpenseState extends State<AddExpense> {
       title: title,
       amount: amount,
       date: DateTime.now(),
-      type: type,
+      type: widget.expenseType,
     );
 
-    widget.addExpense(newExpense);
+    _expenseListProvider.addExpense(newExpense);
     Navigator.of(context).pop();
   }
 
@@ -77,9 +78,9 @@ class _AddExpenseState extends State<AddExpense> {
       child: Column(
         children: [
           const SizedBox(height: 16),
-          const Text(
-            'Add Expense',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          Text(
+            'Add ${widget.expenseType.name.replaceFirst(widget.expenseType.name[0], widget.expenseType.name[0].toUpperCase())} Expense',
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           TextField(
             autocorrect: true,
@@ -87,7 +88,8 @@ class _AddExpenseState extends State<AddExpense> {
             maxLength: 50,
             scrollPadding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
-            decoration: const InputDecoration(labelText: 'Title'),
+            decoration:
+                const InputDecoration(labelText: 'Title', hintText: 'Title'),
           ),
           TextField(
             controller: amountController,
@@ -98,20 +100,6 @@ class _AddExpenseState extends State<AddExpense> {
                 const InputDecoration(labelText: 'Amount', prefixText: '€ '),
           ),
           const SizedBox(height: 32),
-          DropdownButton(
-            value: selectedType,
-            icon: const Icon(Icons.arrow_drop_down),
-            items: ExpenseType.values
-                .map((e) => DropdownMenuItem(
-                    value: e, child: Text(e.name.toUpperCase())))
-                .toList(),
-            onChanged: (value) {
-              if (value == null) return;
-              setState(() {
-                selectedType = value;
-              });
-            },
-          ),
           const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -120,13 +108,20 @@ class _AddExpenseState extends State<AddExpense> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Cancel'),
+                child: const Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.black),
+                ),
               ),
               ElevatedButton(
                 onPressed: () {
+                  debugPrint('Adding expense');
                   submitExpense();
                 },
-                child: const Text('Add Expense'),
+                child: const Text('Add Expense',
+                    style: TextStyle(
+                      color: Colors.black,
+                    )),
               ),
             ],
           ),

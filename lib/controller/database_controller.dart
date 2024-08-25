@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:expensetracker/models/expense.dart';
 
@@ -22,7 +23,7 @@ class DatabaseController {
   // Initialize the database
   Future<Database> initializeDatabase() async {
     // Get the path to the database directory
-    String path = 'expenses.db';
+    String path = './expenses.db';
 
     // Open the database, creating it if it doesn't exist
     return await openDatabase(path, version: 1, onCreate: _createDb);
@@ -47,6 +48,7 @@ class DatabaseController {
         'type': expense.type.toString(),
       },
     );
+    debugPrint('Added expense: ${expense.title} with amount ${expense.amount}');
   }
 
   void deleteExpense(String id) async {
@@ -54,19 +56,61 @@ class DatabaseController {
     db.delete('expenses', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<List<Expense>> loadExpenses() async {
+  Future<List<Expense>> loadCurrentMonthExpenses() async {
     final db = await database;
-    return db.query('expenses').then((value) {
-      return value.map((e) {
-        return Expense.withID(
-          id: e['id'] as String,
-          title: e['title'] as String,
-          amount: e['amount'] as double,
-          date: DateTime.parse(e['date'] as String),
-          type: ExpenseType.values
-              .firstWhere((element) => element.toString() == e['type']),
-        );
-      }).toList();
-    });
+    String month = DateTime.now().month.toString().padLeft(2, '0');
+
+    const query = '''
+    SELECT * FROM expenses 
+    WHERE strftime('%m', date) = ?
+  ''';
+    final results = await db.rawQuery(query, [month]);
+    print(results);
+    return results.map((e) {
+      return Expense.withID(
+        id: e['id'] as String,
+        title: e['title'] as String,
+        amount: e['amount'] as double,
+        date: DateTime.parse(e['date'] as String),
+        type: ExpenseType.values
+            .firstWhere((element) => element.toString() == e['type']),
+      );
+    }).toList();
+  }
+
+  Future<List<Expense>> loadAllExpenses() async {
+    final db = await database;
+    final results = await db.query('expenses');
+    return results.map((e) {
+      return Expense.withID(
+        id: e['id'] as String,
+        title: e['title'] as String,
+        amount: e['amount'] as double,
+        date: DateTime.parse(e['date'] as String),
+        type: ExpenseType.values
+            .firstWhere((element) => element.toString() == e['type']),
+      );
+    }).toList();
+  }
+
+  Future<List<Expense>> loadExpensesByTypeAndMonth(
+      ExpenseType type, String month) async {
+    final db = await database;
+
+    final results = await db.query(
+      'expenses',
+      where: 'type = ? AND strftime(\'%m\', date) = ?',
+      whereArgs: [type.toString(), month],
+    );
+    return results.map((e) {
+      return Expense.withID(
+        id: e['id'] as String,
+        title: e['title'] as String,
+        amount: e['amount'] as double,
+        date: DateTime.parse(e['date'] as String),
+        type: ExpenseType.values
+            .firstWhere((element) => element.toString() == e['type']),
+      );
+    }).toList();
   }
 }

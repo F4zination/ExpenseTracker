@@ -1,14 +1,17 @@
+import 'package:expensetracker/provider/user_provider.dart';
+import 'package:expensetracker/widgets/change_username_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends ConsumerStatefulWidget {
   const SettingsPage({super.key});
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  ConsumerState<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class _SettingsPageState extends ConsumerState<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +21,7 @@ class _SettingsPageState extends State<SettingsPage> {
       body: SettingsList(
         sections: [
           SettingsSection(
-            title: Text('Section'),
+            title: const Text('General'),
             tiles: [
               SettingsTile(
                 title: Text('Language'),
@@ -36,9 +39,17 @@ class _SettingsPageState extends State<SettingsPage> {
             title: Text('Account'),
             tiles: [
               SettingsTile(
-                title: Text('Sign out'),
-                leading: const Icon(Icons.exit_to_app),
-                onPressed: (BuildContext context) {},
+                title: const Text('Change Username'),
+                description: Text(ref.watch(userProvider).getUsername),
+                leading: const Icon(Icons.person),
+                onPressed: (BuildContext context) {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return ChangeUsernameDialog();
+                    },
+                  );
+                },
               ),
             ],
           ),

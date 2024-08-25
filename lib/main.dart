@@ -1,46 +1,40 @@
+import 'package:expensetracker/pages/metric_category_page.dart';
+import 'package:expensetracker/pages/metric_graph_page.dart';
+import 'package:expensetracker/pages/metric_total_expensed_page.dart';
 import 'package:expensetracker/pages/settings_page.dart';
 import 'package:expensetracker/pages/main_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:expensetracker/utils/theme.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+//in main.dart write this:
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
-
-var kColorScheme = ColorScheme.fromSeed(seedColor: Colors.deepPurple);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  void _portraitModeOnly() {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-  }
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    _portraitModeOnly();
+    // check if the user has a theme on the device
+
     return MaterialApp(
       title: 'Expense Tracker',
-      theme: ThemeData().copyWith(
-          colorScheme: kColorScheme,
-          cardTheme: const CardTheme().copyWith(
-            color: kColorScheme.surface,
-            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 10),
-          ),
-          textTheme: ThemeData().textTheme.copyWith(
-                titleLarge: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: kColorScheme.onSecondary),
-              )),
+      theme: lightTheme(),
       initialRoute: '/',
       routes: {
         '/': (context) => const Main(),
         '/settings': (context) => const SettingsPage(),
+        '/metric/category': (context) => const MetricCategoryPage(),
+        '/metric/graph': (context) => const MetricGraphScreen(),
+        '/metric/total': (context) => const MetricTotalScreen(),
       },
     );
   }

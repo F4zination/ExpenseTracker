@@ -37,11 +37,17 @@ dependencies:
   cupertino_icons: ^1.0.2
   uuid: ^4.3.3
   intl: ^0.19.0
-  fl_chart: ^0.66.1
   flutter_launcher_icons: ^0.13.1
-  sqflite: ^2.3.2
+  sqflite: ^2.3.3+1
   flutter_settings_ui: ^3.0.0
+  shared_preferences: ^2.3.2
   animations: ^2.0.11
+  riverpod: ^2.5.0
+  flutter_riverpod: ^2.4.10
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.10+1
+  fl_chart: ^0.68.0
+  flutter_spinkit: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -59,8 +65,8 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/ExpenseAppIcon.png"
-  adaptive_icon_foreground: "assets/images/ExpenseAppIcon.png"
+  image_path: "assets/images/AppIcon.png"
+  adaptive_icon_foreground: "assets/images/AppIcon.png"
   min_sdk_android: 21
 
 
@@ -76,6 +82,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
      - assets/images/
+     - assets/icons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
