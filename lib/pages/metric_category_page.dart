@@ -90,7 +90,6 @@ class _MetricCategoryScreenState extends State<MetricCategoryScreen> {
               },
             ),
           ),
-          const Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(

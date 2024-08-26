@@ -87,7 +87,6 @@ class _MetricTotalScreenState extends State<MetricTotalScreen> {
               },
             ),
           ),
-          const Spacer(),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
