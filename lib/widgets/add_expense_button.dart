@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 
 class AddExpenseButton extends StatelessWidget {
   const AddExpenseButton(
@@ -8,7 +9,7 @@ class AddExpenseButton extends StatelessWidget {
       required this.onPressed,
       this.passthrough = false});
 
-  final String icon;
+  final IconPickerIcon icon;
   final String text;
   final bool passthrough;
   final void Function() onPressed;
@@ -30,10 +31,7 @@ class AddExpenseButton extends StatelessWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              onPressed: onPressed,
-              icon: Image.asset(icon, width: 50),
-            ),
+            child: IconButton(onPressed: onPressed, icon: Icon(icon.data)),
           ),
         ),
         Text(text,

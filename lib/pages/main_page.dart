@@ -1,4 +1,5 @@
 import 'package:expensetracker/models/expense.dart';
+import 'package:expensetracker/provider/expense_types_provider.dart';
 import 'package:expensetracker/provider/user_provider.dart';
 import 'package:expensetracker/widgets/add_expense_dialog.dart';
 import 'package:expensetracker/provider/expense_list_provider.dart';
@@ -33,7 +34,24 @@ class _MainState extends ConsumerState<Main> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        toolbarHeight: 110,
+        title: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Text('Welcome, ${ref.watch(userProvider).getUsername}!',
+              style: const TextStyle(fontSize: 30, color: Colors.black38)),
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).pushNamed('/settings');
+              },
+              icon: const Icon(Icons.settings_outlined,
+                  color: Colors.black, size: 30))
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -45,21 +63,6 @@ class _MainState extends ConsumerState<Main> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 60),
-                Row(
-                  children: [
-                    Text('Welcome, ${ref.watch(userProvider).getUsername}!',
-                        style: const TextStyle(
-                            fontSize: 30, color: Colors.black38)),
-                    const Spacer(),
-                    IconButton(
-                        onPressed: () {
-                          Navigator.of(context).pushNamed('/settings');
-                        },
-                        icon: const Icon(Icons.settings_outlined,
-                            color: Colors.black, size: 30))
-                  ],
-                ),
                 const SizedBox(height: 50),
                 const Text('Total Expenses',
                     style: TextStyle(
@@ -85,100 +88,28 @@ class _MainState extends ConsumerState<Main> {
                       fontSize: 20,
                     )),
                 const SizedBox(height: 20),
-                Row(children: [
-                  AddExpenseButton(
-                      icon: 'assets/icons/fast-food.png',
-                      text: 'Food',
-                      onPressed: () {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (context) => const AddExpenseDialog(
-                                  expenseType: ExpenseType.food,
-                                ));
-                      }),
-                  AddExpenseButton(
-                      icon: 'assets/icons/public-transport.png',
-                      text: 'Transport',
-                      onPressed: () {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (context) => const AddExpenseDialog(
-                                  expenseType: ExpenseType.transport,
-                                ));
-                      }),
-                  AddExpenseButton(
-                      icon: 'assets/icons/lifestyle.png',
-                      text: 'Fun',
-                      onPressed: () {
-                        showModalBottomSheet(
-                            context: context,
-                            builder: (context) => const AddExpenseDialog(
-                                  expenseType: ExpenseType.fun,
-                                ));
-                      }),
-                  AddExpenseButton(
-                      icon: 'assets/icons/more.png',
-                      text: 'More',
-                      passthrough: true,
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                      children: ref
+                          .watch(expenseTypesProvider)
+                          .expenseTypes
+                          .map((expenseType) {
+                    return AddExpenseButton(
+                      icon: expenseType.icon,
+                      text: expenseType.name,
                       onPressed: () {
                         showDialog(
                             context: context,
                             builder: (context) {
-                              return Center(
-                                  child: SizedBox(
-                                height: 130,
-                                width: 300,
-                                child: Card(
-                                  color: Colors.white,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      AddExpenseButton(
-                                          icon:
-                                              'assets/icons/shopping-cart.png',
-                                          text: 'Shopping',
-                                          onPressed: () {
-                                            showModalBottomSheet(
-                                                context: context,
-                                                builder: (context) =>
-                                                    const AddExpenseDialog(
-                                                      expenseType:
-                                                          ExpenseType.shopping,
-                                                    ));
-                                          }),
-                                      AddExpenseButton(
-                                          icon: 'assets/icons/rent.png',
-                                          text: 'Rent',
-                                          onPressed: () {
-                                            showModalBottomSheet(
-                                                context: context,
-                                                builder: (context) =>
-                                                    const AddExpenseDialog(
-                                                      expenseType:
-                                                          ExpenseType.rent,
-                                                    ));
-                                          }),
-                                      AddExpenseButton(
-                                          icon: 'assets/icons/more.png',
-                                          text: 'Others',
-                                          onPressed: () {
-                                            showModalBottomSheet(
-                                                context: context,
-                                                builder: (context) =>
-                                                    const AddExpenseDialog(
-                                                      expenseType:
-                                                          ExpenseType.others,
-                                                    ));
-                                          }),
-                                    ],
-                                  ),
-                                ),
-                              ));
+                              return AddExpenseDialog(
+                                expenseType: expenseType,
+                              );
                             });
-                      }),
-                ]),
+                      },
+                    );
+                  }).toList()),
+                ),
                 const SizedBox(height: 30),
               ],
             ),
@@ -219,7 +150,7 @@ class _MainState extends ConsumerState<Main> {
                               tileColor: Colors.white30,
                               title: Text(expense.title),
                               subtitle: Text('${expense.amount} €'),
-                              leading: Icon(expense.icon),
+                              leading: Icon(expense.icon.data),
                               onLongPress: () {
                                 showDialog(
                                     context: context,
@@ -281,25 +212,25 @@ class _MainState extends ConsumerState<Main> {
                                       Navigator.of(context)
                                           .pushNamed('/metric/category');
                                     }),
-                                const SizedBox(height: 20),
-                                MetricButton(
-                                    title: "Graph-View",
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pushNamed('/metric/graph');
-                                    }),
-                                const SizedBox(height: 20),
-                                MetricButton(
-                                    title: "Total Expenses",
-                                    onPressed: () {
-                                      Navigator.of(context)
-                                          .pushNamed('/metric/total');
-                                    }),
-                                const SizedBox(height: 20),
-                                Text('More metrics coming soon!',
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                    )),
+                                // const SizedBox(height: 20),
+                                // MetricButton(
+                                //     title: "Graph-View",1
+                                //     onPressed: () {
+                                //       Navigator.of(context)
+                                //           .pushNamed('/metric/graph');
+                                //     }),
+                                // const SizedBox(height: 20),
+                                // MetricButton(
+                                //     title: "Total Expenses",
+                                //     onPressed: () {
+                                //       Navigator.of(context)
+                                //           .pushNamed('/metric/total');
+                                //     }),
+                                // const SizedBox(height: 20),
+                                // const Text('More metrics coming soon!',
+                                //     style: const TextStyle(
+                                //       fontSize: 15,
+                                //     )),
                               ],
                             ),
                           ),

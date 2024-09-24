@@ -1,20 +1,22 @@
 import 'package:expensetracker/controller/database_controller.dart';
 import 'package:expensetracker/models/expense.dart';
+import 'package:expensetracker/provider/expense_types_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MetricTotalScreen extends StatefulWidget {
+class MetricTotalScreen extends ConsumerStatefulWidget {
   const MetricTotalScreen({super.key});
 
   @override
-  State<MetricTotalScreen> createState() => _MetricTotalScreenState();
+  ConsumerState<MetricTotalScreen> createState() => _MetricTotalScreenState();
 }
 
-class _MetricTotalScreenState extends State<MetricTotalScreen> {
+class _MetricTotalScreenState extends ConsumerState<MetricTotalScreen> {
   List<List<Expense>> expensesByType = [];
 
   void loadExpenses() async {
     DatabaseController databaseController = DatabaseController();
-    for (ExpenseType type in ExpenseType.values) {
+    for (ExpenseType type in ref.read(expenseTypesProvider).expenseTypes) {
       await databaseController
           .loadExpensesByTypeAndMonth(
               type, DateTime.now().month.toString().padLeft(2, '0'))
@@ -45,7 +47,7 @@ class _MetricTotalScreenState extends State<MetricTotalScreen> {
             child: ListView.builder(
               itemCount: expensesByType.length,
               itemBuilder: (context, index) {
-                ExpenseType type = ExpenseType.values[index];
+                ExpenseType type = expensesByType[index].first.type;
                 List<Expense> expenses = expensesByType[index]
                     .where((element) => element.type == type)
                     .toList();

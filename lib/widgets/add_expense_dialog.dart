@@ -1,6 +1,7 @@
 import 'package:expensetracker/provider/expense_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:expensetracker/models/expense.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart' hide serializeIcon;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AddExpenseDialog extends ConsumerStatefulWidget {
@@ -15,8 +16,9 @@ class AddExpenseDialog extends ConsumerStatefulWidget {
 class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
-  ExpenseType selectedType = ExpenseType.food;
+
   late final ExpenseListProvider _expenseListProvider;
+  Icon? _icon;
 
   @override
   void dispose() {
@@ -44,7 +46,7 @@ class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
     String title = titleController.text.trim();
     double amount = this.amount;
 
-    final type = selectedType;
+    final type = widget.expenseType;
 
     if (title.isEmpty) {
       title = type.name;
@@ -64,6 +66,24 @@ class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
 
     _expenseListProvider.addExpense(newExpense);
     Navigator.of(context).pop();
+  }
+
+  _pickIcon() async {
+    IconPickerIcon? icon = await showIconPicker(
+      context,
+      iconPackModes: const [
+        IconPack.fontAwesomeIcons,
+        IconPack.allMaterial,
+        IconPack.lineAwesomeIcons
+      ],
+      noResultsText: 'No results found',
+      searchHintText: 'Search Icon for ${widget.expenseType.name}',
+    );
+    if (icon == null) return;
+    _icon = Icon(icon!.data);
+    setState(() {});
+
+    debugPrint('Picked Icon:  ${icon.data}');
   }
 
   @override
@@ -100,6 +120,17 @@ class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
                 const InputDecoration(labelText: 'Amount', prefixText: '€ '),
           ),
           const SizedBox(height: 32),
+          Row(
+            children: [
+              ElevatedButton(
+                  onPressed: _pickIcon, child: const Text('Open IconPicker')),
+              const SizedBox(width: 16),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: _icon ?? Container(),
+              )
+            ],
+          ),
           const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,

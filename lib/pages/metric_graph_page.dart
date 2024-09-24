@@ -1,30 +1,33 @@
+import 'package:expensetracker/provider/expense_types_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:expensetracker/models/expense.dart';
 import 'package:expensetracker/controller/database_controller.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:tuple/tuple.dart';
 
-class MetricGraphScreen extends StatefulWidget {
+class MetricGraphScreen extends ConsumerStatefulWidget {
   const MetricGraphScreen({super.key});
 
   @override
-  State<MetricGraphScreen> createState() => _MetricGraphScreenState();
+  ConsumerState<MetricGraphScreen> createState() => _MetricGraphScreenState();
 }
 
-class _MetricGraphScreenState extends State<MetricGraphScreen> {
-  List<double> totalExpensesByType = [];
+class _MetricGraphScreenState extends ConsumerState<MetricGraphScreen> {
+  List<Tuple2<ExpenseType, double>> totalExpensesByType = [];
   bool loading = true;
   List<BarChartGroupData> barGroupData = [];
 
   void loadExpenses(DatabaseController databaseController) async {
-    for (ExpenseType type in ExpenseType.values) {
+    for (ExpenseType type in ref.read(expenseTypesProvider).expenseTypes) {
       await databaseController
           .loadExpensesByTypeAndMonth(
               type, DateTime.now().month.toString().padLeft(2, '0'))
           .then((value) {
         double total = value.fold(
             0, (previousValue, element) => previousValue + element.amount);
-        totalExpensesByType.add(total);
+        totalExpensesByType.add(Tuple2(type, total));
       });
     }
 
@@ -36,8 +39,8 @@ class _MetricGraphScreenState extends State<MetricGraphScreen> {
                 x: e.key,
                 barRods: [
                   BarChartRodData(
-                      toY: e.value,
-                      color: categoryColors[ExpenseType.values[e.key]],
+                      toY: e.value.item2,
+                      color: const Color(0xFF5D9FAE),
                       width: 20,
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(10),
@@ -108,15 +111,23 @@ class _MetricGraphScreenState extends State<MetricGraphScreen> {
                                     axisSide: meta.axisSide,
                                     child: Column(
                                       children: [
-                                        Icon(categoryIcons[
-                                            ExpenseType.values[value.toInt()]]),
+                                        Icon(
+                                          totalExpensesByType[value.toInt()]
+                                              .item1
+                                              .icon
+                                              .data,
+                                        ),
                                         const SizedBox(
                                           height: 30,
                                         ),
                                         Transform.rotate(
-                                            angle: 3.14 / 2,
-                                            child: Text(ExpenseType
-                                                .values[value.toInt()].name)),
+                                          angle: 3.14 / 2,
+                                          child: Text(
+                                            totalExpensesByType[value.toInt()]
+                                                .item1
+                                                .name,
+                                          ),
+                                        )
                                       ],
                                     ));
                               },
@@ -139,8 +150,12 @@ class _MetricGraphScreenState extends State<MetricGraphScreen> {
                           drawHorizontalLine: true,
                           drawVerticalLine: false,
                         ),
-                        maxY: (totalExpensesByType.reduce((value, element) =>
-                                    value > element ? value : element) *
+                        maxY: (totalExpensesByType
+                                    .reduce((value, element) =>
+                                        value.item2 > element.item2
+                                            ? value
+                                            : element)
+                                    .item2 *
                                 1.2)
                             .floor()
                             .toDouble(),
