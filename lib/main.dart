@@ -29,8 +29,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => const Main(),
         '/settings': (context) => const SettingsPage(),
         '/metric/category': (context) => const MetricCategoryScreen(),
-        //'/metric/graph': (context) => const MetricGraphScreen(),
-        // '/metric/total': (context) => const MetricTotalScreen(),
+        '/metric/graph': (context) => const MetricGraphScreen(),
+        '/metric/total': (context) => const MetricTotalScreen(),
       },
     );
   }

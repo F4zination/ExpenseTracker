@@ -53,6 +53,7 @@ dependencies:
   flutter_iconpicker: ^3.5.1
   path_provider: ^2.1.4
   tuple: ^2.0.2
+  flutter_colorpicker: ^1.1.0
 
 dev_dependencies:
   flutter_test:

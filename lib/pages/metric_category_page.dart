@@ -15,6 +15,7 @@ class MetricCategoryScreen extends ConsumerStatefulWidget {
 
 class _MetricCategoryScreenState extends ConsumerState<MetricCategoryScreen> {
   List<List<Expense>> expensesByType = [];
+  Map<String, ExpenseType> expenseTypeMap = {};
 
   void loadExpenses() async {
     DatabaseController databaseController = DatabaseController();

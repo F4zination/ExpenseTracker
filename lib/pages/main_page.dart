@@ -3,6 +3,8 @@ import 'package:expensetracker/provider/expense_types_provider.dart';
 import 'package:expensetracker/provider/user_provider.dart';
 import 'package:expensetracker/widgets/add_expense_dialog.dart';
 import 'package:expensetracker/provider/expense_list_provider.dart';
+import 'package:expensetracker/widgets/add_expense_type_button.dart';
+import 'package:expensetracker/widgets/add_expense_type_dialog.dart';
 import 'package:expensetracker/widgets/metric_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -90,25 +92,36 @@ class _MainState extends ConsumerState<Main> {
                 const SizedBox(height: 20),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: Row(
-                      children: ref
-                          .watch(expenseTypesProvider)
-                          .expenseTypes
-                          .map((expenseType) {
-                    return AddExpenseButton(
-                      icon: expenseType.icon,
-                      text: expenseType.name,
+                  child: Row(children: [
+                    ...ref
+                        .watch(expenseTypesProvider)
+                        .expenseTypes
+                        .map((expenseType) {
+                      return AddExpenseButton(
+                        icon: expenseType.icon,
+                        text: expenseType.name,
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (context) {
+                                return AddExpenseDialog(
+                                  expenseType: expenseType,
+                                );
+                              });
+                        },
+                      );
+                    }).toList(),
+                    AddExpenseTypeButton(
+                      text: 'add category',
                       onPressed: () {
-                        showDialog(
+                        showModalBottomSheet(
                             context: context,
                             builder: (context) {
-                              return AddExpenseDialog(
-                                expenseType: expenseType,
-                              );
+                              return const AddExpenseTypeDialog();
                             });
                       },
-                    );
-                  }).toList()),
+                    ),
+                  ]),
                 ),
                 const SizedBox(height: 30),
               ],

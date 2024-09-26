@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 const Uuid _uuid = Uuid();
 
 String? serializeIcon(IconPickerIcon icon) {
-  return '${icon.name}|${icon.data.codePoint}|${icon.data.fontFamily}|${icon.data.fontPackage}|${icon.data.matchTextDirection}|${icon.pack.toString()}';
+  debugPrint(
+      '${icon.name}|${icon.data.codePoint}|${icon.data.fontFamily}|${icon.data.fontPackage}|${icon.data.matchTextDirection}|${icon.pack}');
+  return '${icon.name}|${icon.data.codePoint}|${icon.data.fontFamily}|${icon.data.fontPackage}|${icon.data.matchTextDirection}|${icon.pack}';
 }
 
 IconPickerIcon deserializeIcon(String? serialized) {
@@ -13,19 +15,38 @@ IconPickerIcon deserializeIcon(String? serialized) {
   if (parts == null || parts.length != 6) {
     throw Exception('Invalid serialized icon: $serialized');
   }
+  IconPack? pack;
 
-  var icon = IconPickerIcon(
+  if (parts[5] == 'IconPack.fontAwesomeIcons"') {
+    pack = IconPack.fontAwesomeIcons;
+  } else if (parts[5] == 'IconPack.allMaterial"') {
+    pack = IconPack.allMaterial;
+  } else if (parts[5] == 'IconPack.custom"') {
+    pack = IconPack.custom;
+  } else if (parts[5] == 'IconPack.material"') {
+    pack = IconPack.material;
+  } else if (parts[5] == 'IconPack.cupertino"') {
+    pack = IconPack.cupertino;
+  } else if (parts[5] == 'IconPack.sharpMaterial"') {
+    pack = IconPack.sharpMaterial;
+  } else if (parts[5] == 'IconPack.roundedMaterial"') {
+    pack = IconPack.roundedMaterial;
+  } else if (parts[5] == 'IconPack.outlinedMaterial"') {
+    pack = IconPack.outlinedMaterial;
+  } else if (parts[5] == 'IconPack.lineAwesomeIcons"') {
+    pack = IconPack.lineAwesomeIcons;
+  }
+
+  IconPickerIcon icon = IconPickerIcon(
     name: parts[0],
     data: IconData(
       int.parse(parts[1]),
       fontFamily: parts[2],
-      fontPackage: parts[3],
+      fontPackage: parts[3] == 'null' ? null : parts[3],
       matchTextDirection: parts[4] == 'true',
     ),
-    pack:
-        IconPack.values.firstWhere((element) => element.toString() == parts[5]),
+    pack: pack!,
   );
-  debugPrint('Deserialized icon: ${icon.data}');
   return icon;
 }
 
@@ -57,7 +78,7 @@ class Expense {
   final String title;
   final double amount;
   final DateTime date;
-  final String? attachment;
+  final String attachment;
   final ExpenseType type;
 
   Expense({
@@ -65,7 +86,7 @@ class Expense {
     required this.amount,
     required this.date,
     required this.type,
-    this.attachment,
+    this.attachment = 'none',
   }) : id = _uuid.v4();
 
   Expense.withID(
