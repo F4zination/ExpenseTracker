@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Expense Tracker',
-      theme: lightTheme(),
+      theme: darkTheme(),
       initialRoute: '/',
       routes: {
         '/': (context) => const Main(),

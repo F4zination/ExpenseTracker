@@ -64,109 +64,102 @@ class _MetricGraphScreenState extends ConsumerState<MetricGraphScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Metric Category'),
-      ),
-      body: Center(
-          child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(loading ? 'Loading...' : 'Total Expenses by Category',
-                style: const TextStyle(fontSize: 20, color: Colors.black38)),
-            const SizedBox(height: 50),
-            loading
-                ? const Column(
-                    children: [
-                      SpinKitDoubleBounce(
-                        color: Color(0xFF5D9FAE),
-                        size: 50.0,
-                      ),
-                      SizedBox(height: 20),
-                      Text('Oh boy, this is taking a while...',
-                          style: TextStyle(
-                              color: Color(0xFF5D9FAE), fontSize: 20)),
-                    ],
-                  )
-                : AspectRatio(
-                    aspectRatio: 0.8,
-                    child: BarChart(
-                      BarChartData(
-                        barGroups: barGroupData,
-                        alignment: BarChartAlignment.spaceEvenly,
-                        titlesData: FlTitlesData(
-                          rightTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false)),
-                          topTitles: const AxisTitles(
-                              sideTitles: SideTitles(showTitles: false)),
-                          bottomTitles: AxisTitles(
-                            sideTitles: SideTitles(
-                              showTitles: true,
-                              reservedSize: 100,
-                              getTitlesWidget: (value, meta) {
-                                return SideTitleWidget(
-                                    space: 20,
-                                    axisSide: meta.axisSide,
-                                    child: Column(
-                                      children: [
-                                        Icon(
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(loading ? 'Loading...' : 'Total Expenses by Category',
+              style: const TextStyle(fontSize: 20, color: Colors.white70)),
+          const SizedBox(height: 50),
+          loading
+              ? const Column(
+                  children: [
+                    SpinKitDoubleBounce(
+                      color: Color(0xFF5D9FAE),
+                      size: 50.0,
+                    ),
+                    SizedBox(height: 20),
+                    Text('Oh boy, this is taking a while...',
+                        style: TextStyle(color: Colors.white, fontSize: 20)),
+                  ],
+                )
+              : AspectRatio(
+                  aspectRatio: 0.8,
+                  child: BarChart(
+                    BarChartData(
+                      barGroups: barGroupData,
+                      alignment: BarChartAlignment.spaceEvenly,
+                      titlesData: FlTitlesData(
+                        rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                        topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false)),
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 100,
+                            getTitlesWidget: (value, meta) {
+                              return SideTitleWidget(
+                                  space: 20,
+                                  axisSide: meta.axisSide,
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        totalExpensesByType[value.toInt()]
+                                            .item1
+                                            .icon
+                                            .data,
+                                      ),
+                                      const SizedBox(
+                                        height: 30,
+                                      ),
+                                      Transform.rotate(
+                                        angle: 3.14 / 2,
+                                        child: Text(
                                           totalExpensesByType[value.toInt()]
                                               .item1
-                                              .icon
-                                              .data,
+                                              .name,
                                         ),
-                                        const SizedBox(
-                                          height: 30,
-                                        ),
-                                        Transform.rotate(
-                                          angle: 3.14 / 2,
-                                          child: Text(
-                                            totalExpensesByType[value.toInt()]
-                                                .item1
-                                                .name,
-                                          ),
-                                        )
-                                      ],
-                                    ));
-                              },
-                            ),
+                                      )
+                                    ],
+                                  ));
+                            },
                           ),
                         ),
-                        backgroundColor: Colors.grey[200],
-                        barTouchData: BarTouchData(
-                          touchTooltipData: BarTouchTooltipData(getTooltipItem:
-                              (group, groupIndex, rod, rodIndex) {
-                            return BarTooltipItem(
-                                '${rod.toY}€',
-                                const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold));
-                          }),
-                        ),
-                        gridData: const FlGridData(
-                          show: true,
-                          drawHorizontalLine: true,
-                          drawVerticalLine: false,
-                        ),
-                        maxY: (totalExpensesByType
-                                    .reduce((value, element) =>
-                                        value.item2 > element.item2
-                                            ? value
-                                            : element)
-                                    .item2 *
-                                1.2)
-                            .floor()
-                            .toDouble(),
                       ),
-                      swapAnimationCurve: Curves.easeInOut,
-                      swapAnimationDuration: const Duration(milliseconds: 150),
+                      backgroundColor: Colors.grey[200],
+                      barTouchData: BarTouchData(
+                        touchTooltipData: BarTouchTooltipData(
+                            getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                          return BarTooltipItem(
+                              '${rod.toY}€',
+                              const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold));
+                        }),
+                      ),
+                      gridData: const FlGridData(
+                        show: true,
+                        drawHorizontalLine: true,
+                        drawVerticalLine: false,
+                      ),
+                      maxY: (totalExpensesByType
+                                  .reduce((value, element) =>
+                                      value.item2 > element.item2
+                                          ? value
+                                          : element)
+                                  .item2 *
+                              1.2)
+                          .floor()
+                          .toDouble(),
                     ),
+                    swapAnimationCurve: Curves.easeInOut,
+                    swapAnimationDuration: const Duration(milliseconds: 150),
                   ),
-          ],
-        ),
-      )),
+                ),
+        ],
+      ),
     );
   }
 }

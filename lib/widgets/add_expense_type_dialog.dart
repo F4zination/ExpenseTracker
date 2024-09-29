@@ -70,6 +70,8 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
         IconPack.lineAwesomeIcons,
         IconPack.allMaterial,
       ],
+      backgroundColor: const Color(0xFF373737),
+      iconColor: _color ?? Colors.white,
       noResultsText: 'No results found',
       searchHintText: 'Search Icon for ${titleController.text}',
     );
@@ -82,19 +84,22 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        child: Container(
+    return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(32),
+      decoration: const BoxDecoration(
+        color: Color(0xFF373737),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
       ),
       child: Column(
         children: [
           const SizedBox(height: 16),
           const Text(
             'Add a new Category',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(
+                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
           ),
           TextField(
             autocorrect: true,
@@ -127,7 +132,10 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
                   onPressed: _pickIcon, child: const Text('Open IconPicker')),
               const SizedBox(width: 32),
               _icon != null
-                  ? Icon(_icon!.data)
+                  ? Icon(
+                      _icon!.data,
+                      color: _color ?? Colors.white,
+                    )
                   : const Icon(Icons.error_outline),
             ],
           ),
@@ -216,6 +224,6 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
           ),
         ],
       ),
-    ));
+    );
   }
 }

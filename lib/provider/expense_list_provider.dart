@@ -18,7 +18,9 @@ class ExpenseListProvider extends ChangeNotifier {
 
   double get totalExpenses {
     return _expenses.fold(
-        0, (previousValue, element) => previousValue + element.amount);
+        0.0,
+        (previousValue, element) =>
+            previousValue + (element.type.isExpense ? element.amount : 0.0));
   }
 
   void addExpense(Expense expense) {
@@ -26,6 +28,11 @@ class ExpenseListProvider extends ChangeNotifier {
     debugPrint('Adding expense: $expense');
     notifyListeners();
     _databaseController.addExpense(expense);
+  }
+
+  void categoryWasRemoved(ExpenseType category) {
+    _expenses.removeWhere((element) => element.type.name == category.name);
+    notifyListeners();
   }
 
   void removeExpense(Expense expense) {

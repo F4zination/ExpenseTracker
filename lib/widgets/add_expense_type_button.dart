@@ -17,26 +17,25 @@ class AddExpenseTypeButton extends ConsumerWidget {
     return Column(
       children: [
         Card(
-          color: passthrough ? Colors.white : const Color(0xFFC4D5E8),
+          color: const Color.fromARGB(53, 217, 217, 217),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-            side: passthrough
-                ? const BorderSide(
-                    color: Color(0xFF5D9FAE),
-                    width: 2,
-                  )
-                : BorderSide.none,
+            borderRadius: BorderRadius.circular(90),
           ),
-          child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                  onPressed: onPressed,
-                  icon: const Icon(Icons.post_add_rounded))),
+          child: SizedBox(
+            width: 75,
+            height: 75,
+            child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: IconButton(
+                    onPressed: onPressed,
+                    icon: const Icon(Icons.add_rounded,
+                        size: 45, color: Colors.white))),
+          ),
         ),
-        Text(text,
-            style: const TextStyle(
-              fontSize: 15,
-            )),
+        // Text(text,
+        //     style: const TextStyle(
+        //       fontSize: 15,
+        //     )),
       ],
     );
   }

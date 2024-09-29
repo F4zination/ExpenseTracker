@@ -25,6 +25,7 @@ class _ChangeUsernameDialogState extends ConsumerState<ChangeUsernameDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: const Color.fromARGB(255, 81, 81, 81),
       title: const Text('Change Username'),
       content: TextField(
         controller: textController,
@@ -36,7 +37,7 @@ class _ChangeUsernameDialogState extends ConsumerState<ChangeUsernameDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const Text('Cancel', style: TextStyle(color: Colors.white)),
         ),
         TextButton(
           onPressed: () {
@@ -44,7 +45,7 @@ class _ChangeUsernameDialogState extends ConsumerState<ChangeUsernameDialog> {
             ref.read(userProvider).setUsername(textController.text);
             Navigator.of(context).pop();
           },
-          child: const Text('Save'),
+          child: const Text('Save', style: TextStyle(color: Colors.white)),
         ),
       ],
     );

@@ -18,6 +18,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 81, 81, 81),
         title: const Text('Settings'),
       ),
       body: SettingsList(

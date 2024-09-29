@@ -23,9 +23,9 @@ ThemeData lightTheme() {
 
 ThemeData darkTheme() {
   return ThemeData(
-    primaryColor: const Color(0xFF5D7C9A),
+    primaryColor: const Color(0xFF2F2F2F),
     colorScheme: const ColorScheme.dark(
-      primary: Color(0xFF5D7C9A),
+      primary: Color(0xFF2F2F2F),
       secondary: Color(0xFFC4D5E8),
       onPrimary: Colors.white,
       onSecondary: Colors.black,

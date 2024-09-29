@@ -30,12 +30,15 @@ class ExpenseTypesProvider with ChangeNotifier {
     }
   }
 
-  Future<void> deleteExpenseType(String name) async {
+  Future<void> deleteExpenseType(ExpenseType expenseType) async {
     try {
       // Delete the expense type from the database using the database controller
-      await _databaseController.deleteExpenseType(name);
+      await _databaseController.deleteAllExpnsesOfType(expenseType);
+
+      await _databaseController.deleteExpenseType(expenseType);
+
       // Update the expense type list by removing the deleted expense type
-      _expenseTypes.removeWhere((element) => element.name == name);
+      _expenseTypes.removeWhere((element) => element.name == expenseType.name);
       notifyListeners();
     } catch (error) {
       // Handle any errors that occur during deletion

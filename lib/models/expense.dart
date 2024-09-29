@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 const Uuid _uuid = Uuid();
 
 String? serializeIcon(IconPickerIcon icon) {
-  debugPrint(
-      '${icon.name}|${icon.data.codePoint}|${icon.data.fontFamily}|${icon.data.fontPackage}|${icon.data.matchTextDirection}|${icon.pack}');
   return '${icon.name}|${icon.data.codePoint}|${icon.data.fontFamily}|${icon.data.fontPackage}|${icon.data.matchTextDirection}|${icon.pack}';
 }
 

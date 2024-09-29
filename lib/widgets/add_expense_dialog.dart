@@ -68,69 +68,78 @@ class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-        child: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(32),
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color.fromARGB(243, 55, 55, 55),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          topRight: Radius.circular(20),
+        ),
       ),
-      child: Column(
-        children: [
-          const SizedBox(height: 16),
-          Text(
-            'Add ${widget.expenseType.name.replaceFirst(widget.expenseType.name[0], widget.expenseType.name[0].toUpperCase())} Expense',
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          TextField(
-            autocorrect: true,
-            controller: titleController,
-            maxLength: 50,
-            scrollPadding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom),
-            decoration:
-                const InputDecoration(labelText: 'Title', hintText: 'Title'),
-          ),
-          TextField(
-            controller: amountController,
-            keyboardType: TextInputType.number,
-            scrollPadding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom),
-            decoration:
-                const InputDecoration(labelText: 'Amount', prefixText: '€ '),
-          ),
-          const Spacer(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(40, 147, 53, 53)),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
-                  'Cancel',
-                  style: TextStyle(color: Colors.black),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 16),
+            Text(
+              'Add ${widget.expenseType.name.replaceFirst(widget.expenseType.name[0], widget.expenseType.name[0].toUpperCase())} Expense',
+              style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
+            TextField(
+              autocorrect: true,
+              controller: titleController,
+              maxLength: 50,
+              scrollPadding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              decoration: const InputDecoration(
+                labelText: 'Title',
+                hintText: 'Title',
+              ),
+            ),
+            TextField(
+              controller: amountController,
+              keyboardType: TextInputType.number,
+              scrollPadding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom),
+              decoration:
+                  const InputDecoration(labelText: 'Amount', prefixText: '€ '),
+            ),
+            const Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(40, 147, 53, 53)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(40, 34, 255, 0)),
-                onPressed: () {
-                  debugPrint('Adding expense');
-                  submitExpense();
-                },
-                child: const Text('Add Expense',
-                    style: TextStyle(
-                      color: Colors.black,
-                    )),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-        ],
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromARGB(40, 34, 255, 0)),
+                  onPressed: () {
+                    debugPrint('Adding expense');
+                    submitExpense();
+                  },
+                  child: const Text('Add Expense',
+                      style: TextStyle(
+                        color: Colors.black,
+                      )),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
       ),
-    ));
+    );
   }
 }

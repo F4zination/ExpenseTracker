@@ -123,7 +123,7 @@ class DatabaseController {
         'amount': expense.amount,
         'date': expense.date.toIso8601String(),
         'typeID': expense.type.id,
-        'attachment': expense.attachment,
+        'attachement': expense.attachment,
       },
     );
     debugPrint('Added expense: ${expense.title} with amount ${expense.amount}');
@@ -134,9 +134,10 @@ class DatabaseController {
     db.delete('expenses', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future<int> deleteExpenseType(String id) async {
+  Future<int> deleteExpenseType(ExpenseType expenseType) async {
     final db = await database;
-    return db.delete('expenseType', where: 'name = ?', whereArgs: [id]);
+    return db
+        .delete('expenseType', where: 'name = ?', whereArgs: [expenseType.id]);
   }
 
   void deleteAllExpenses() async {
@@ -165,8 +166,7 @@ class DatabaseController {
     final results =
         await db.query('expenseType', where: 'id = ?', whereArgs: [id]);
 
-    return results
-        .map((e) {
+    List<ExpenseType> listOfresults = results.map((e) {
           var icon = deserializeIcon(e['icon'] as String);
           return ExpenseType.withID(
             id: e['id'] as String,
@@ -175,9 +175,30 @@ class DatabaseController {
             icon: icon,
             isExpense: e['expense'] == 'true' ? true : false,
           );
-        })
-        .toList()
-        .first;
+        }).toList() ??
+        [];
+    return listOfresults[0];
+  }
+
+  Future<void> deleteAllExpnsesOfType(ExpenseType type) async {
+    final db = await database;
+    db.delete('expenses', where: 'typeID = ?', whereArgs: [type.id]);
+  }
+
+  Future<List<DateTime>> loadAllExistingMonths() async {
+    final db = await database;
+    final results = await db.rawQuery(
+      'SELECT DISTINCT strftime(\'%m-%Y\', date) as month FROM expenses',
+    );
+    return results.map((e) {
+      String dateString = e['month'] as String;
+      List<String> parts = dateString.split('-');
+      int month = int.parse(parts[0]);
+      int year = int.parse(parts[1]);
+
+      // Create a DateTime object with the parsed year and month, using day as 1
+      return DateTime(year, month, 1);
+    }).toList();
   }
 
   Future<int> addExpenseType(ExpenseType type) async {
@@ -212,7 +233,9 @@ class DatabaseController {
         amount: e['amount'] as double,
         date: DateTime.parse(e['date'] as String),
         type: await loadExpenseType(e['typeID'] as String),
-        attachment: e['attachment'] as String,
+        attachment: e['attachment'].toString() == 'null'
+            ? ''
+            : e['attachment'] as String,
       ));
     }
 
