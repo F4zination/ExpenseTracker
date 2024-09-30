@@ -13,37 +13,49 @@ class DisplayExpensesCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      child: Column(
-        children: [
-          Text(
-            category,
-            style: const TextStyle(fontSize: 20, color: Colors.white),
-          ),
-          expenses.isEmpty
-              ? const Text(
-                  'No expenses in this category',
-                  style: TextStyle(color: Colors.white),
-                )
-              : ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: expenses.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(
-                        expenses[index].title,
-                        style: const TextStyle(color: Colors.white),
+    return expenses.isEmpty
+        ? Container()
+        : SizedBox(
+            height: height,
+            child: Column(
+              children: [
+                Card(
+                  color: const Color.fromARGB(255, 75, 75, 75),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    height: 30,
+                    child: Center(
+                      child: Text(
+                        category,
+                        style:
+                            const TextStyle(fontSize: 20, color: Colors.white),
                       ),
-                      subtitle: Text(
-                        expenses[index].amount.toString(),
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
-        ],
-      ),
-    );
+                expenses.isEmpty
+                    ? const Text(
+                        'No expenses in this category',
+                        style: TextStyle(color: Colors.white),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: expenses.length,
+                        itemBuilder: (context, index) {
+                          return ListTile(
+                            title: Text(
+                              expenses[index].title,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            subtitle: Text(
+                              expenses[index].amount.toString(),
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          );
+                        },
+                      ),
+              ],
+            ),
+          );
   }
 }

@@ -245,7 +245,6 @@ class DatabaseController {
   Future<List<Expense>> loadAllExpenses() async {
     final db = await database;
     final results = await db.query('expenses');
-    print(results);
     return results.map((e) {
       return Expense.withID(
         id: e['id'] as String,
@@ -258,28 +257,28 @@ class DatabaseController {
           color: Color(int.parse(e['color'] as String)),
           icon: deserializeIcon(e['icon'] as String),
         ),
-        attachment: e['attachment'] as String,
+        attachment: e['attachment'].toString() == 'null'
+            ? ''
+            : e['attachment'] as String,
       );
     }).toList();
   }
 
   Future<List<Expense>> loadExpenseByType(ExpenseType type) async {
     final db = await database;
-    final results = await db
-        .query('expenses', where: 'typeID = ?', whereArgs: [type.toString()]);
+    final results = await db.query('expenses',
+        where: 'typeID = ?', whereArgs: [type.id.toString()]);
     return results.map((e) {
+      debugPrint(e.toString());
       return Expense.withID(
         id: e['id'] as String,
         title: e['title'] as String,
         amount: e['amount'] as double,
         date: DateTime.parse(e['date'] as String),
-        type: ExpenseType.withID(
-          id: e['id'] as String,
-          name: e['name'] as String,
-          color: Color(int.parse(e['color'] as String)),
-          icon: deserializeIcon(e['icon'] as String),
-        ),
-        attachment: e['attachment'] as String,
+        type: type,
+        attachment: e['attachment'].toString() == 'null'
+            ? ''
+            : e['attachment'] as String,
       );
     }).toList();
   }
@@ -291,7 +290,7 @@ class DatabaseController {
     final results = await db.query(
       'expenses',
       where: 'typeID = ? AND strftime(\'%m\', date) = ?',
-      whereArgs: [type.toString(), month],
+      whereArgs: [type.id.toString(), month],
     );
     return results.map((e) {
       return Expense.withID(
@@ -299,15 +298,10 @@ class DatabaseController {
         title: e['title'] as String,
         amount: e['amount'] as double,
         date: DateTime.parse(e['date'] as String),
-        type: ExpenseType.withID(
-          id: e['id'] as String,
-          name: e['name'] as String,
-          color: Color(int.parse(e['color'] as String)),
-          icon: deserializeIcon(
-            (e['icon'] as String),
-          ),
-        ),
-        attachment: e['attachment'] as String,
+        type: type,
+        attachment: e['attachment'].toString() == 'null'
+            ? ''
+            : e['attachment'] as String,
       );
     }).toList();
   }

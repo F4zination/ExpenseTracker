@@ -16,15 +16,19 @@ class MetricCategoryScreen extends ConsumerStatefulWidget {
 
 class _MetricCategoryScreenState extends ConsumerState<MetricCategoryScreen> {
   Map<ExpenseType, List<Expense>> expensesByType = {};
+  DatabaseController databaseController = DatabaseController();
 
   void loadExpenses() async {
-    DatabaseController databaseController = DatabaseController();
+    Map<ExpenseType, List<Expense>> tempLIst = {};
     for (ExpenseType type in ref.read(expenseTypesProvider).expenseTypes) {
       await databaseController.loadExpenseByType(type).then((value) {
-        expensesByType[type] = value;
+        debugPrint(value.toString());
+        tempLIst[type] = value;
       });
     }
-    setState(() {});
+    setState(() {
+      expensesByType = tempLIst;
+    });
   }
 
   String get dateFormated {
@@ -59,6 +63,7 @@ class _MetricCategoryScreenState extends ConsumerState<MetricCategoryScreen> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
                     'Expenses by Category',

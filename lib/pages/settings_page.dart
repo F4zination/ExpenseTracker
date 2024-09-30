@@ -27,16 +27,16 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             title: const Text('General'),
             tiles: [
               SettingsTile(
-                title: const Text('Delete Database'),
+                title: const Text('Delete all Expenses'),
                 leading: const Icon(Icons.delete_forever),
                 onPressed: (BuildContext context) {
                   showDialog(
                     context: context,
                     builder: (context) {
                       return AlertDialog(
-                        title: const Text('Delete Database'),
+                        title: const Text('Delete Expenses'),
                         content: const Text(
-                            'Are you sure you want to delete the database?'),
+                            'Are you sure you want to delete all Expenses?'),
                         actions: [
                           TextButton(
                             onPressed: () {

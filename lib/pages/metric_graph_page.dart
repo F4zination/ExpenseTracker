@@ -17,6 +17,7 @@ class MetricGraphScreen extends ConsumerStatefulWidget {
 class _MetricGraphScreenState extends ConsumerState<MetricGraphScreen> {
   List<Tuple2<ExpenseType, double>> totalExpensesByType = [];
   bool loading = true;
+  DatabaseController databaseController = DatabaseController();
   List<BarChartGroupData> barGroupData = [];
 
   void loadExpenses(DatabaseController databaseController) async {
@@ -25,11 +26,14 @@ class _MetricGraphScreenState extends ConsumerState<MetricGraphScreen> {
           .loadExpensesByTypeAndMonth(
               type, DateTime.now().month.toString().padLeft(2, '0'))
           .then((value) {
+        debugPrint(value.toString());
         double total = value.fold(
-            0, (previousValue, element) => previousValue + element.amount);
+            0.0, (previousValue, element) => previousValue + element.amount);
         totalExpensesByType.add(Tuple2(type, total));
       });
     }
+
+    debugPrint(totalExpensesByType.toString());
 
     setState(() {
       barGroupData = totalExpensesByType
@@ -40,7 +44,7 @@ class _MetricGraphScreenState extends ConsumerState<MetricGraphScreen> {
                 barRods: [
                   BarChartRodData(
                       toY: e.value.item2,
-                      color: const Color(0xFF5D9FAE),
+                      color: e.value.item1.color,
                       width: 20,
                       borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(10),
@@ -56,7 +60,6 @@ class _MetricGraphScreenState extends ConsumerState<MetricGraphScreen> {
   @override
   void initState() {
     super.initState();
-    DatabaseController databaseController = DatabaseController();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadExpenses(databaseController);
     });
@@ -91,49 +94,57 @@ class _MetricGraphScreenState extends ConsumerState<MetricGraphScreen> {
                       barGroups: barGroupData,
                       alignment: BarChartAlignment.spaceEvenly,
                       titlesData: FlTitlesData(
-                        rightTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false)),
-                        topTitles: const AxisTitles(
-                            sideTitles: SideTitles(showTitles: false)),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 100,
-                            getTitlesWidget: (value, meta) {
-                              return SideTitleWidget(
-                                  space: 20,
-                                  axisSide: meta.axisSide,
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        totalExpensesByType[value.toInt()]
-                                            .item1
-                                            .icon
-                                            .data,
-                                      ),
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      Transform.rotate(
-                                        angle: 3.14 / 2,
-                                        child: Text(
+                          rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false)),
+                          topTitles: const AxisTitles(
+                              sideTitles: SideTitles(showTitles: false)),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 100,
+                              getTitlesWidget: (value, meta) {
+                                return SideTitleWidget(
+                                    space: 20,
+                                    axisSide: meta.axisSide,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Icon(
                                           totalExpensesByType[value.toInt()]
                                               .item1
-                                              .name,
+                                              .icon
+                                              .data,
+                                          color:
+                                              totalExpensesByType[value.toInt()]
+                                                  .item1
+                                                  .color,
                                         ),
-                                      )
-                                    ],
-                                  ));
-                            },
+                                      ],
+                                    ));
+                              },
+                            ),
                           ),
-                        ),
-                      ),
-                      backgroundColor: Colors.grey[200],
+                          leftTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 40,
+                            getTitlesWidget: (value, meta) {
+                              return SideTitleWidget(
+                                axisSide: meta.axisSide,
+                                child: Text(
+                                  value.floor().toString(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              );
+                            },
+                          ))),
+                      backgroundColor: Colors.transparent,
                       barTouchData: BarTouchData(
                         touchTooltipData: BarTouchTooltipData(
                             getTooltipItem: (group, groupIndex, rod, rodIndex) {
                           return BarTooltipItem(
-                              '${rod.toY}€',
+                              '${totalExpensesByType[groupIndex].item1.name}\n${rod.toY}€',
                               const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold));

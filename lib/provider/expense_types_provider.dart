@@ -46,6 +46,18 @@ class ExpenseTypesProvider with ChangeNotifier {
     }
   }
 
+  Future<void> reorderExpenseTypes(int oldIndex, int newIndex) async {
+    try {
+      // Update the expense type list with the reordered expense types
+      final expenseType = _expenseTypes.removeAt(oldIndex);
+      _expenseTypes.insert(newIndex, expenseType);
+      notifyListeners();
+    } catch (error) {
+      // Handle any errors that occur during reordering
+      debugPrint('Error reordering expense types: $error');
+    }
+  }
+
   Future<void> fetchExpenseTypes() async {
     try {
       // Fetch expense types from the database using the database controller

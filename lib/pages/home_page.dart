@@ -102,51 +102,70 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ),
         const SizedBox(height: 50),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(children: [
-            AddExpenseTypeButton(
-              text: 'add category',
-              onPressed: () {
-                showModalBottomSheet(
-                    context: context,
-                    builder: (context) {
-                      return const AddExpenseTypeDialog();
-                    });
-              },
-            ),
-            ...ref.watch(expenseTypesProvider).expenseTypes.map((expenseType) {
-              return AddExpenseButton(
-                icon: expenseType.icon,
-                text: expenseType.name,
-                color: expenseType.color,
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.transparent,
-                    builder: (context) => Padding(
-                      padding: EdgeInsets.only(
-                          bottom: MediaQuery.of(context).viewInsets.bottom),
-                      child: Container(
-                        height: MediaQuery.of(context).size.height * 0.4,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(25.0),
-                            topRight: Radius.circular(25.0),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 5),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                AddExpenseTypeButton(
+                    text: 'add category',
+                    onPressed: () {
+                      showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => Padding(
+                              padding: EdgeInsets.only(
+                                  bottom:
+                                      MediaQuery.of(context).viewInsets.bottom),
+                              child: Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.5,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(25.0),
+                                      topRight: Radius.circular(25.0),
+                                    ),
+                                  ),
+                                  child: const AddExpenseTypeDialog())));
+                    }),
+                ...ref
+                    .watch(expenseTypesProvider)
+                    .expenseTypes
+                    .map((expenseType) {
+                  return AddExpenseButton(
+                    expenseType: expenseType,
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => Padding(
+                          padding: EdgeInsets.only(
+                              bottom: MediaQuery.of(context).viewInsets.bottom),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.4,
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(25.0),
+                                topRight: Radius.circular(25.0),
+                              ),
+                            ),
+                            child: AddExpenseDialog(
+                              expenseType: expenseType,
+                            ),
                           ),
                         ),
-                        child: AddExpenseDialog(
-                          expenseType: expenseType,
-                        ),
-                      ),
-                    ),
+                      );
+                    },
                   );
-                },
-              );
-            }).toList(),
-          ]),
+                }).toList(),
+              ],
+            ),
+          ),
         ),
         const SizedBox(height: 30),
         Expanded(

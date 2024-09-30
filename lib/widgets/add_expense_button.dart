@@ -34,57 +34,61 @@ class AddExpenseButton extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 7),
       child: Column(
         children: [
-          InkWell(
-            onTap: onPressed,
-            onLongPress: () {
-              showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                        backgroundColor: const Color.fromARGB(255, 43, 43, 43),
-                        title: const Text('Delete Expense-Type?',
-                            style: TextStyle(color: Colors.white)),
-                        content: Text(
-                            'Are you sure you want to delete the expense type ${expenseType.name}?',
-                            style: const TextStyle(color: Colors.white)),
-                        actions: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('No',
-                                    style: TextStyle(color: Colors.white)),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  ref
-                                      .read(expenseTypesProvider.notifier)
-                                      .deleteExpenseType(expenseType);
-                                  ref
-                                      .read(expenseListProvider)
-                                      .categoryWasRemoved(expenseType);
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('Yes',
-                                    style: TextStyle(color: Colors.red)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ));
-            },
-            child: Card(
-              color: reduceLightness(expenseType.color, 0.35),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(90),
-              ),
-              child: SizedBox(
-                width: 75,
-                height: 75,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+          Card(
+            color: reduceLightness(expenseType.color, 0.35),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(90),
+            ),
+            child: SizedBox(
+              width: 75,
+              height: 75,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: InkWell(
+                  highlightColor: Colors.transparent,
+                  splashFactory: NoSplash.splashFactory,
+                  onTap: onPressed,
+                  onLongPress: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              backgroundColor:
+                                  const Color.fromARGB(255, 43, 43, 43),
+                              title: const Text('Delete Expense-Type?',
+                                  style: TextStyle(color: Colors.white)),
+                              content: Text(
+                                  'Are you sure you want to delete the expense type ${expenseType.name}?',
+                                  style: const TextStyle(color: Colors.white)),
+                              actions: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('No',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        ref
+                                            .read(expenseTypesProvider.notifier)
+                                            .deleteExpenseType(expenseType);
+                                        ref
+                                            .read(expenseListProvider)
+                                            .categoryWasRemoved(expenseType);
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Yes',
+                                          style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ));
+                  },
                   child: Icon(expenseType.icon.data,
                       size: 45, color: expenseType.color),
                 ),

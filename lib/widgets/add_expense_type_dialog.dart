@@ -107,13 +107,22 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
             maxLength: 50,
             scrollPadding: EdgeInsets.only(
                 bottom: MediaQuery.of(context).viewInsets.bottom),
-            decoration:
-                const InputDecoration(labelText: 'Title', hintText: 'Title'),
+            decoration: const InputDecoration(
+              labelText: 'Title',
+              hintText: 'Title',
+              hintStyle: TextStyle(color: Colors.white),
+              labelStyle: TextStyle(color: Colors.white),
+              floatingLabelStyle: TextStyle(color: Colors.white),
+              counterStyle: TextStyle(color: Colors.white),
+            ),
           ),
           const SizedBox(height: 16),
           Row(
             children: [
-              Text(_isExpense ? 'Expense' : 'Income'),
+              Text(
+                _isExpense ? 'Expense' : 'Income',
+                style: const TextStyle(color: Colors.white),
+              ),
               const SizedBox(width: 16),
               Switch(
                 value: _isExpense,
