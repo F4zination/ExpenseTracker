@@ -107,9 +107,9 @@ class DatabaseController {
       // Column does not exist, add it
       await db
           .execute('ALTER TABLE $tableName ADD COLUMN $columnName $columnType');
-      print('Column $columnName added to table $tableName.');
+      debugPrint('Column $columnName added to table $tableName.');
     } else {
-      print('Column $columnName already exists in table $tableName.');
+      debugPrint('Column $columnName already exists in table $tableName.');
     }
   }
 
@@ -137,7 +137,7 @@ class DatabaseController {
   Future<int> deleteExpenseType(ExpenseType expenseType) async {
     final db = await database;
     return db
-        .delete('expenseType', where: 'name = ?', whereArgs: [expenseType.id]);
+        .delete('expenseType', where: 'id = ?', whereArgs: [expenseType.id]);
   }
 
   void deleteAllExpenses() async {
@@ -167,16 +167,15 @@ class DatabaseController {
         await db.query('expenseType', where: 'id = ?', whereArgs: [id]);
 
     List<ExpenseType> listOfresults = results.map((e) {
-          var icon = deserializeIcon(e['icon'] as String);
-          return ExpenseType.withID(
-            id: e['id'] as String,
-            name: e['name'] as String,
-            color: Color(int.parse(e['color'] as String, radix: 16)),
-            icon: icon,
-            isExpense: e['expense'] == 'true' ? true : false,
-          );
-        }).toList() ??
-        [];
+      var icon = deserializeIcon(e['icon'] as String);
+      return ExpenseType.withID(
+        id: e['id'] as String,
+        name: e['name'] as String,
+        color: Color(int.parse(e['color'] as String, radix: 16)),
+        icon: icon,
+        isExpense: e['expense'] == 'true' ? true : false,
+      );
+    }).toList();
     return listOfresults[0];
   }
 
@@ -224,10 +223,10 @@ class DatabaseController {
     WHERE strftime('%m', date) = ?
   ''';
     final results = await db.rawQuery(query, [month]);
-    List<Expense> list_results = [];
+    List<Expense> listResult = [];
     // using print to show the results, wich are in a bad format for debugPrint
     for (var e in results) {
-      list_results.add(Expense.withID(
+      listResult.add(Expense.withID(
         id: e['id'] as String,
         title: e['title'] as String,
         amount: e['amount'] as double,
@@ -239,7 +238,7 @@ class DatabaseController {
       ));
     }
 
-    return Future.value(list_results);
+    return Future.value(listResult);
   }
 
   Future<List<Expense>> loadAllExpenses() async {

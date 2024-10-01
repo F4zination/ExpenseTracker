@@ -1,13 +1,24 @@
-import 'package:expensetracker/provider/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ChangeUsernameDialog extends ConsumerStatefulWidget {
+class ChangeSettingsDialog extends ConsumerStatefulWidget {
+  const ChangeSettingsDialog(
+      {Key? key,
+      required this.title,
+      required this.hintText,
+      required this.onSave})
+      : super(key: key);
+
+  final String title;
+  final String hintText;
+  final void Function(dynamic) onSave;
+
   @override
-  _ChangeUsernameDialogState createState() => _ChangeUsernameDialogState();
+  ConsumerState<ChangeSettingsDialog> createState() =>
+      _ChangeSettingDialogState();
 }
 
-class _ChangeUsernameDialogState extends ConsumerState<ChangeUsernameDialog> {
+class _ChangeSettingDialogState extends ConsumerState<ChangeSettingsDialog> {
   late TextEditingController textController;
 
   @override
@@ -26,12 +37,13 @@ class _ChangeUsernameDialogState extends ConsumerState<ChangeUsernameDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: const Color.fromARGB(255, 81, 81, 81),
-      title: const Text('Change Username'),
+      title: Text('Change ${widget.title}',
+          style: const TextStyle(color: Colors.white)),
       content: TextField(
         controller: textController,
         autofocus: true,
-        decoration: const InputDecoration(
-          hintText: 'Enter new username',
+        decoration: InputDecoration(
+          hintText: widget.hintText,
         ),
       ),
       actions: [
@@ -42,7 +54,7 @@ class _ChangeUsernameDialogState extends ConsumerState<ChangeUsernameDialog> {
         TextButton(
           onPressed: () {
             // Assuming userProv is accessible
-            ref.read(userProvider).setUsername(textController.text);
+            widget.onSave(textController.text);
             Navigator.of(context).pop();
           },
           child: const Text('Save', style: TextStyle(color: Colors.white)),

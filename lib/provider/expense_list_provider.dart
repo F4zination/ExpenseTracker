@@ -23,6 +23,21 @@ class ExpenseListProvider extends ChangeNotifier {
             previousValue + (element.type.isExpense ? element.amount : 0.0));
   }
 
+  double getTotalAmountExpensesPerType(ExpenseType type) {
+    final expensesOfType =
+        _expenses.where((element) => element.type.name == type.name).toList();
+    return expensesOfType.fold(
+        0.0,
+        (previousValue, element) =>
+            previousValue + (element.type.isExpense ? element.amount : 0.0));
+  }
+
+  List<Expense> getExpensesByType(ExpenseType type) {
+    return _expenses
+        .where((element) => element.type.name == type.name)
+        .toList();
+  }
+
   void addExpense(Expense expense) {
     _expenses.add(expense);
     debugPrint('Adding expense: $expense');

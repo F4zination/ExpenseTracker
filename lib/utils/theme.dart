@@ -17,7 +17,7 @@ ThemeData lightTheme() {
       buttonColor: Color.fromARGB(137, 93, 124, 154),
       textTheme: ButtonTextTheme.normal,
     ),
-    fontFamily: GoogleFonts.kanit().fontFamily,
+    fontFamily: GoogleFonts.asap().fontFamily,
   );
 }
 

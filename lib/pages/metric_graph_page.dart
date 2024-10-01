@@ -155,13 +155,15 @@ class _MetricGraphScreenState extends ConsumerState<MetricGraphScreen> {
                         drawHorizontalLine: true,
                         drawVerticalLine: false,
                       ),
-                      maxY: (totalExpensesByType
-                                  .reduce((value, element) =>
-                                      value.item2 > element.item2
-                                          ? value
-                                          : element)
-                                  .item2 *
-                              1.2)
+                      maxY: (totalExpensesByType.isEmpty
+                              ? 0.0
+                              : totalExpensesByType
+                                      .reduce((value, element) =>
+                                          value.item2 > element.item2
+                                              ? value
+                                              : element)
+                                      .item2 *
+                                  1.2)
                           .floor()
                           .toDouble(),
                     ),

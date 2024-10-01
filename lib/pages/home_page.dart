@@ -1,12 +1,14 @@
 import 'package:expensetracker/models/expense.dart';
 import 'package:expensetracker/provider/expense_list_provider.dart';
 import 'package:expensetracker/provider/expense_types_provider.dart';
+import 'package:expensetracker/provider/max_spending_provider.dart';
 import 'package:expensetracker/provider/month_provider.dart';
-import 'package:expensetracker/widgets/add_expense_button.dart';
-import 'package:expensetracker/widgets/add_expense_dialog.dart';
-import 'package:expensetracker/widgets/add_expense_type_button.dart';
-import 'package:expensetracker/widgets/add_expense_type_dialog.dart';
+import 'package:expensetracker/widgets/add_expense/add_expense_button.dart';
+import 'package:expensetracker/widgets/add_expense/add_expense_dialog.dart';
+import 'package:expensetracker/widgets/add_expense_type/add_expense_type_dialog.dart';
+import 'package:expensetracker/widgets/circle_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -18,13 +20,6 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  String currentMonat = DateFormat('MMMM').format(DateTime.now());
-
-  String get dateFormated {
-    DateTime now = DateTime.now();
-    return DateFormat('MMMM-yyyy').format(now);
-  }
-
   String numberFormated(double number) {
     // Create a NumberFormat instance with two decimal places
     final formatter = NumberFormat('#,##0.00', 'de_DE');
@@ -46,6 +41,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   style: TextStyle(fontSize: 32, color: Colors.white)),
               const SizedBox(height: 10),
               Container(
+                height: 40,
                 decoration: BoxDecoration(
                   color: const Color.fromARGB(255, 255, 255, 255),
                   borderRadius: BorderRadius.circular(50),
@@ -53,7 +49,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: DropdownButton(
-                    isDense: false,
                     icon: const Icon(Icons.keyboard_arrow_down_rounded,
                         color: Color.fromARGB(255, 110, 110, 110)),
                     underline: Container(),
@@ -67,18 +62,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                       );
                     }).toList(),
                     onChanged: (value) {
-                      setState(() {
-                        currentMonat = DateFormat('MMMM').format(value!);
-                        ref
-                            .read(monthProvider)
-                            .setMonth(DateFormat('MMMM').format(value));
-                      });
+                      ref.read(monthProvider).month =
+                          DateFormat('MMMM').format(value!);
+                      ref
+                          .read(monthProvider)
+                          .setMonth(DateFormat('MMMM').format(value));
                     },
-                    hint: Text(currentMonat,
+                    hint: Text(ref.watch(monthProvider).month,
                         style: const TextStyle(color: Colors.black87)),
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
               Align(
                 alignment: Alignment.topRight,
                 child: Padding(
@@ -86,14 +81,16 @@ class _HomePageState extends ConsumerState<HomePage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      const Text('max. 600 €',
-                          style: TextStyle(
+                      Text(
+                          'max. ${numberFormated(ref.watch(maxSepndingProvider).maxSpending)} €',
+                          style: const TextStyle(
                             color: Colors.white60,
+                            fontSize: 20,
                           )),
                       Text(
                           '${numberFormated(ref.watch(expenseListProvider.notifier).totalExpenses)} €',
                           style: const TextStyle(
-                              fontSize: 35, color: Color(0xFF59EE57))),
+                              fontSize: 42, color: Color(0xFF59EE57))),
                     ],
                   ),
                 ),
@@ -101,69 +98,91 @@ class _HomePageState extends ConsumerState<HomePage> {
             ],
           ),
         ),
-        const SizedBox(height: 50),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                AddExpenseTypeButton(
-                    text: 'add category',
-                    onPressed: () {
-                      showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    child: CircleIcon(
+                        icon: const IconPickerIcon(
+                          name: 'add',
+                          pack: IconPack.material,
+                          data: Icons.add_rounded,
+                        ),
+                        iconColor: Colors.white,
+                        color: const Color.fromARGB(53, 217, 217, 217),
+                        onPressed: () {
+                          showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => Padding(
+                                  padding: EdgeInsets.only(
+                                      bottom: MediaQuery.of(context)
+                                          .viewInsets
+                                          .bottom),
+                                  child: Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.45,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.white,
+                                        borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(25.0),
+                                          topRight: Radius.circular(25.0),
+                                        ),
+                                      ),
+                                      child: const AddExpenseTypeDialog())));
+                        }),
+                  ),
+                  ...ref
+                      .watch(expenseTypesProvider)
+                      .expenseTypes
+                      .reversed
+                      .map((expenseType) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 3, vertical: 5),
+                      child: AddExpenseButton(
+                        expenseType: expenseType,
+                        onPressed: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (context) => Padding(
                               padding: EdgeInsets.only(
                                   bottom:
                                       MediaQuery.of(context).viewInsets.bottom),
                               child: Container(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.5,
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(25.0),
-                                      topRight: Radius.circular(25.0),
-                                    ),
+                                height:
+                                    MediaQuery.of(context).size.height * 0.4,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(25.0),
+                                    topRight: Radius.circular(25.0),
                                   ),
-                                  child: const AddExpenseTypeDialog())));
-                    }),
-                ...ref
-                    .watch(expenseTypesProvider)
-                    .expenseTypes
-                    .map((expenseType) {
-                  return AddExpenseButton(
-                    expenseType: expenseType,
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => Padding(
-                          padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).viewInsets.bottom),
-                          child: Container(
-                            height: MediaQuery.of(context).size.height * 0.4,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(25.0),
-                                topRight: Radius.circular(25.0),
+                                ),
+                                child: AddExpenseDialog(
+                                  expenseType: expenseType,
+                                ),
                               ),
                             ),
-                            child: AddExpenseDialog(
-                              expenseType: expenseType,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                }).toList(),
-              ],
+                          );
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
             ),
           ),
         ),
@@ -257,7 +276,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                                 SizedBox(
                                   width: constraints.maxWidth / 4,
                                   child: Text(
-                                      '${expense.amount.toStringAsFixed(2).replaceAll('.', ',')} €',
+                                      '${numberFormated(expense.amount)} €',
                                       style: TextStyle(
                                           color: isExpense
                                               ? Colors.red

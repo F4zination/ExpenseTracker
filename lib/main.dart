@@ -1,6 +1,5 @@
 import 'package:expensetracker/pages/metric_category_page.dart';
 import 'package:expensetracker/pages/metric_graph_page.dart';
-import 'package:expensetracker/pages/metric_total_expensed_page.dart';
 import 'package:expensetracker/pages/settings_page.dart';
 import 'package:expensetracker/pages/main_page.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +29,6 @@ class MyApp extends StatelessWidget {
         '/settings': (context) => const SettingsPage(),
         '/metric/category': (context) => const MetricCategoryScreen(),
         '/metric/graph': (context) => const MetricGraphScreen(),
-        '/metric/total': (context) => const MetricTotalScreen(),
       },
     );
   }

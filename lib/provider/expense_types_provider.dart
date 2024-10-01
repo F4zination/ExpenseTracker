@@ -36,25 +36,13 @@ class ExpenseTypesProvider with ChangeNotifier {
       await _databaseController.deleteAllExpnsesOfType(expenseType);
 
       await _databaseController.deleteExpenseType(expenseType);
-
+      debugPrint('Deleted expense type: ${expenseType.name}');
       // Update the expense type list by removing the deleted expense type
       _expenseTypes.removeWhere((element) => element.name == expenseType.name);
       notifyListeners();
     } catch (error) {
       // Handle any errors that occur during deletion
       debugPrint('Error deleting expense type: $error');
-    }
-  }
-
-  Future<void> reorderExpenseTypes(int oldIndex, int newIndex) async {
-    try {
-      // Update the expense type list with the reordered expense types
-      final expenseType = _expenseTypes.removeAt(oldIndex);
-      _expenseTypes.insert(newIndex, expenseType);
-      notifyListeners();
-    } catch (error) {
-      // Handle any errors that occur during reordering
-      debugPrint('Error reordering expense types: $error');
     }
   }
 

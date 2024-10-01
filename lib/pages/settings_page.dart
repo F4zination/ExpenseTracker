@@ -1,9 +1,11 @@
 import 'package:expensetracker/controller/database_controller.dart';
+import 'package:expensetracker/provider/max_spending_provider.dart';
 import 'package:expensetracker/provider/user_provider.dart';
-import 'package:expensetracker/widgets/change_username_dialog.dart';
+import 'package:expensetracker/widgets/change_settings_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_settings_ui/flutter_settings_ui.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsPage extends ConsumerStatefulWidget {
@@ -14,6 +16,12 @@ class SettingsPage extends ConsumerStatefulWidget {
 }
 
 class _SettingsPageState extends ConsumerState<SettingsPage> {
+  String numberFormated(double number) {
+    // Create a NumberFormat instance with two decimal places
+    final formatter = NumberFormat('#,##0.00', 'de_DE');
+    return formatter.format(number);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +80,35 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   showDialog(
                     context: context,
                     builder: (context) {
-                      return ChangeUsernameDialog();
+                      return ChangeSettingsDialog(
+                        title: 'Username',
+                        hintText: 'Enter your new Username',
+                        onSave: (newUsername) {
+                          ref.read(userProvider).setUsername(newUsername);
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+              SettingsTile(
+                title: const Text('Change Max. Spending'),
+                description: Text(numberFormated(
+                    ref.watch(maxSepndingProvider).getMaxSpendings)),
+                leading: const Icon(Icons.person),
+                onPressed: (BuildContext context) {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return ChangeSettingsDialog(
+                        title: 'Max. Spending',
+                        hintText: 'Enter your new Max. Spending',
+                        onSave: (newMaxSpending) {
+                          ref
+                              .read(maxSepndingProvider)
+                              .setNewMaxSpendings(double.parse(newMaxSpending));
+                        },
+                      );
                     },
                   );
                 },
@@ -118,7 +154,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                                 await launchUrl(
                                     Uri.parse("https://www.flaticon.com/"));
                               } catch (e) {
-                                print(e);
+                                debugPrint(e.toString());
                               }
                             },
                             child: const Text('Visit Flaticons here!'),

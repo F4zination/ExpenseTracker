@@ -17,7 +17,7 @@ class Main extends ConsumerStatefulWidget {
 
 class _MainState extends ConsumerState<Main> {
   int _currentIndex = 0;
-  PageController _pageController = PageController();
+  final PageController _pageController = PageController();
 
   @override
   void initState() {

@@ -1,10 +1,11 @@
 import 'package:expensetracker/controller/database_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MonthProvider extends ChangeNotifier {
-  String month = 'September';
+  String month = DateFormat('MMMM-yyyy').format(DateTime.now());
   List<DateTime> existingMonths = [];
   DatabaseController databaseController = DatabaseController();
 
@@ -12,11 +13,14 @@ class MonthProvider extends ChangeNotifier {
     _loadMonth();
   }
 
-  String get getUsername => month;
+  String getMonth() {
+    return month;
+  }
 
   void _loadMonth() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    month = prefs.getString('month') ?? 'September';
+    month = prefs.getString('month') ??
+        DateFormat('MMMM-yyyy').format(DateTime.now());
     notifyListeners();
     existingMonths = await databaseController.loadAllExistingMonths();
   }
