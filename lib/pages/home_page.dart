@@ -62,13 +62,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                       );
                     }).toList(),
                     onChanged: (value) {
-                      ref.read(monthProvider).month =
-                          DateFormat('MMMM').format(value!);
-                      ref
-                          .read(monthProvider)
-                          .setMonth(DateFormat('MMMM').format(value));
+                      ref.read(monthProvider).month = value!;
+                      ref.read(monthProvider).setMonth(value);
                     },
-                    hint: Text(ref.watch(monthProvider).month,
+                    hint: Text(
+                        DateFormat('MMMM-yyyy')
+                            .format(ref.watch(monthProvider).month),
                         style: const TextStyle(color: Colors.black87)),
                   ),
                 ),

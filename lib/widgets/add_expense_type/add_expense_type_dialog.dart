@@ -3,6 +3,7 @@ import 'package:expensetracker/provider/expense_types_provider.dart';
 import 'package:expensetracker/widgets/circle_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart' hide serializeIcon;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -69,15 +70,17 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
   _pickIcon() async {
     IconPickerIcon? icon = await showIconPicker(
       context,
-      iconPackModes: const [
-        IconPack.fontAwesomeIcons,
-        IconPack.lineAwesomeIcons,
-        IconPack.allMaterial,
-      ],
-      backgroundColor: const Color(0xFF373737),
-      iconColor: Colors.white,
-      noResultsText: 'No results found',
-      searchHintText: 'Search Icon for ${titleController.text}',
+      configuration: SinglePickerConfiguration(
+        iconPackModes: const [
+          IconPack.fontAwesomeIcons,
+          IconPack.lineAwesomeIcons,
+          IconPack.allMaterial,
+        ],
+        backgroundColor: const Color(0xFF373737),
+        iconColor: Colors.white,
+        noResultsText: 'No results found',
+        searchHintText: 'Search Icon for ${titleController.text}',
+      ),
     );
     if (icon == null) return;
     _icon = icon;
@@ -200,13 +203,14 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
                     decoration: InputDecoration(
                       labelText: 'Name of category',
                       alignLabelWithHint: true,
-                      labelStyle: TextStyle(
-                          color: const Color.fromARGB(171, 255, 255, 255),
+                      labelStyle: GoogleFonts.asapCondensed(
+                        textStyle: const TextStyle(
+                          color: Color.fromARGB(171, 255, 255, 255),
                           fontSize: 18,
-                          fontFamily: GoogleFonts.asapCondensed().fontFamily,
                           wordSpacing: 1.5,
                           letterSpacing: 0.5,
-                          fontStyle: FontStyle.italic),
+                        ),
+                      ),
                       contentPadding: const EdgeInsets.only(bottom: 17),
                       floatingLabelBehavior: FloatingLabelBehavior.never,
                       border: InputBorder.none,

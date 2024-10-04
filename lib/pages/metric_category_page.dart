@@ -22,7 +22,9 @@ class _MetricCategoryScreenState extends ConsumerState<MetricCategoryScreen> {
   void loadExpenses() async {
     Map<ExpenseType, List<Expense>> tempLIst = {};
     for (ExpenseType type in ref.read(expenseTypesProvider).expenseTypes) {
-      await databaseController.loadExpenseByType(type).then((value) {
+      await databaseController
+          .loadExpensesByTypeAndMonth(type, ref.read(monthProvider).getMonth())
+          .then((value) {
         debugPrint(value.toString());
         tempLIst[type] = value;
       });
@@ -91,13 +93,12 @@ class _MetricCategoryScreenState extends ConsumerState<MetricCategoryScreen> {
                       );
                     }).toList(),
                     onChanged: (value) {
-                      ref.read(monthProvider).month =
-                          DateFormat('MMMM').format(value!);
-                      ref
-                          .read(monthProvider)
-                          .setMonth(DateFormat('MMMM').format(value));
+                      ref.read(monthProvider).month = value!;
+                      ref.read(monthProvider).setMonth(value);
                     },
-                    hint: Text(ref.watch(monthProvider).month,
+                    hint: Text(
+                        DateFormat('MMMM-yyyy')
+                            .format(ref.watch(monthProvider).month),
                         style: const TextStyle(color: Colors.black87)),
                   ),
                 ),

@@ -1,22 +1,28 @@
 import 'package:expensetracker/pages/metric_category_page.dart';
 import 'package:expensetracker/pages/metric_graph_page.dart';
 import 'package:expensetracker/pages/settings_page.dart';
-import 'package:expensetracker/pages/main_page.dart';
+import 'package:expensetracker/pages/navigation_page.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:expensetracker/utils/theme.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     const ProviderScope(
-      child: MyApp(),
+      child: ExpenseTracker(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ExpenseTracker extends StatelessWidget {
+  const ExpenseTracker({super.key});
 
   @override
   Widget build(BuildContext context) {
