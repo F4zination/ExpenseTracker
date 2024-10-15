@@ -2,6 +2,7 @@ import 'package:expensetracker/models/expense.dart';
 import 'package:expensetracker/provider/expense_types_provider.dart';
 import 'package:expensetracker/provider/month_provider.dart';
 import 'package:expensetracker/widgets/display_expenses_category.dart';
+import 'package:expensetracker/widgets/month_dropdown_button.dart';
 import 'package:flutter/material.dart';
 import 'package:expensetracker/controller/database_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -71,38 +72,7 @@ class _MetricCategoryScreenState extends ConsumerState<MetricCategoryScreen> {
               const Text('Categories',
                   style: TextStyle(fontSize: 32, color: Colors.white)),
               const SizedBox(height: 10),
-              Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: DropdownButton(
-                    icon: const Icon(Icons.keyboard_arrow_down_rounded,
-                        color: Color.fromARGB(255, 110, 110, 110)),
-                    underline: Container(),
-                    dropdownColor: const Color.fromARGB(255, 60, 60, 60),
-                    style: const TextStyle(color: Colors.white),
-                    items: ref.watch(monthProvider).existingMonths.map((e) {
-                      return DropdownMenuItem(
-                        value: e,
-                        child: Text(DateFormat('MMMM-yyyy').format(e),
-                            style: const TextStyle(color: Colors.white)),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      ref.read(monthProvider).month = value!;
-                      ref.read(monthProvider).setMonth(value);
-                    },
-                    hint: Text(
-                        DateFormat('MMMM-yyyy')
-                            .format(ref.watch(monthProvider).month),
-                        style: const TextStyle(color: Colors.black87)),
-                  ),
-                ),
-              ),
+              MonthDropdownButton(ref: ref),
               const SizedBox(height: 8),
             ],
           ),

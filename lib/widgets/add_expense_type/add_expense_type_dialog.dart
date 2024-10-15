@@ -6,7 +6,6 @@ import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_iconpicker/Models/configuration.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart' hide serializeIcon;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_switch/flutter_switch.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AddExpenseTypeDialog extends ConsumerStatefulWidget {
@@ -24,7 +23,6 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
   IconPickerIcon? _icon;
   Color? _color;
   bool _isExpense = true;
-  bool _recurringExpense = false;
 
   @override
   void dispose() {
@@ -43,16 +41,7 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
   void submit() {
     String title = titleController.text.trim();
 
-    if (title.isEmpty) {
-      debugPrint('Title is empty');
-      return;
-    }
-    if (_icon == null) {
-      debugPrint('Icon is null');
-      return;
-    }
-    if (_color == null) {
-      debugPrint('Color is null');
+    if (title.isEmpty || _icon == null || _color == null) {
       return;
     }
 
@@ -76,10 +65,17 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
           IconPack.lineAwesomeIcons,
           IconPack.allMaterial,
         ],
-        backgroundColor: const Color(0xFF373737),
+        backgroundColor: const Color.fromARGB(255, 43, 43, 43),
         iconColor: Colors.white,
+        searchIcon: const Icon(Icons.search, color: Colors.white),
+        iconPickerShape: ShapeBorder.lerp(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+            1),
         noResultsText: 'No results found',
         searchHintText: 'Search Icon for ${titleController.text}',
+        closeChild:
+            const Center(child: Icon(Icons.close, color: Colors.red, size: 30)),
       ),
     );
     if (icon == null) return;
@@ -95,7 +91,7 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
       Container(
           padding: const EdgeInsets.all(16),
           decoration: const BoxDecoration(
-            color: Color(0xFF373737),
+            color: Color.fromARGB(255, 43, 43, 43),
             borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
@@ -110,73 +106,27 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
                 child: Row(
                   children: [
                     CircleIcon(
-                        icon: _icon ??
-                            const IconPickerIcon(
-                                name: 'question_mark',
-                                data: Icons.question_mark_rounded,
-                                pack: IconPack.material),
-                        color:
-                            _color ?? const Color.fromARGB(255, 161, 161, 161),
-                        iconColor: _color == null
-                            ? const Color.fromARGB(255, 138, 138, 138)
-                            : null,
-                        width: 90,
-                        height: 90,
-                        iconSize: 55,
-                        onPressed: _pickIcon),
+                      icon: _icon ??
+                          const IconPickerIcon(
+                              name: 'question_mark',
+                              data: Icons.question_mark_rounded,
+                              pack: IconPack.material),
+                      color: _color ?? const Color.fromARGB(255, 161, 161, 161),
+                      iconColor: _color == null
+                          ? const Color.fromARGB(255, 138, 138, 138)
+                          : null,
+                      width: 90,
+                      height: 90,
+                      iconSize: 55,
+                      onPressed: null,
+                    ),
                     const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'New Category',
-                          style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white),
-                        ),
-                        Padding(
-                          padding: _recurringExpense
-                              ? const EdgeInsets.symmetric(vertical: 1)
-                              : const EdgeInsets.symmetric(vertical: 8),
-                          child: Row(
-                            children: [
-                              FlutterSwitch(
-                                  height: 26,
-                                  width: 45,
-                                  padding: 3,
-                                  activeColor:
-                                      const Color.fromARGB(255, 161, 161, 161),
-                                  inactiveColor:
-                                      const Color.fromARGB(255, 127, 127, 127),
-                                  value: _recurringExpense,
-                                  onToggle: (value) {
-                                    setState(() {
-                                      _recurringExpense = value;
-                                    });
-                                  }),
-                              const SizedBox(width: 16),
-                              Text(
-                                  _recurringExpense
-                                      ? 'recurring'
-                                      : 'occasional',
-                                  style: const TextStyle(
-                                      color: Color.fromARGB(255, 156, 156, 156),
-                                      fontSize: 18)),
-                              const SizedBox(width: 8),
-                              _recurringExpense
-                                  ? IconButton(
-                                      icon: const Icon(
-                                        Icons.calendar_month_outlined,
-                                        color:
-                                            Color.fromARGB(255, 156, 156, 156),
-                                      ),
-                                      onPressed: () {})
-                                  : const SizedBox(),
-                            ],
-                          ),
-                        )
-                      ],
+                    const Text(
+                      'New Category',
+                      style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white),
                     ),
                   ],
                 ),
@@ -228,9 +178,12 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
                     width: MediaQuery.of(context).size.width * 0.35,
                     child: Center(
                       child: RadioListTile<String>(
-                        title: const Text('Expenses',
-                            style:
-                                TextStyle(fontSize: 17, color: Colors.white)),
+                        title: Text('Expenses',
+                            style: TextStyle(
+                                fontSize: 17,
+                                color: _isExpense
+                                    ? Colors.white
+                                    : Colors.white30)),
                         value: 'Expenses',
                         groupValue: _isExpense ? 'Expenses' : 'Income',
                         onChanged: (value) {
@@ -239,9 +192,9 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
                           });
                         },
                         contentPadding: const EdgeInsets.all(0),
-                        activeColor: const Color.fromARGB(159, 255, 255, 255),
+                        activeColor: const Color.fromARGB(216, 255, 255, 255),
                         fillColor: WidgetStateProperty.all(
-                            const Color.fromARGB(60, 255, 255, 255)),
+                            const Color.fromARGB(146, 255, 255, 255)),
                       ),
                     ),
                   ),
@@ -249,9 +202,12 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
                     width: MediaQuery.of(context).size.width * 0.35,
                     child: Center(
                       child: RadioListTile<String>(
-                        title: const Text('Income',
-                            style:
-                                TextStyle(fontSize: 17, color: Colors.white)),
+                        title: Text('Income',
+                            style: TextStyle(
+                                fontSize: 17,
+                                color: _isExpense
+                                    ? Colors.white30
+                                    : Colors.white)),
                         value: 'Income',
                         groupValue: _isExpense ? 'Expenses' : 'Income',
                         onChanged: (value) {
@@ -260,9 +216,9 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
                           });
                         },
                         contentPadding: const EdgeInsets.all(0),
-                        activeColor: const Color.fromARGB(159, 255, 255, 255),
+                        activeColor: const Color.fromARGB(216, 255, 255, 255),
                         fillColor: WidgetStateProperty.all(
-                            const Color.fromARGB(60, 255, 255, 255)),
+                            const Color.fromARGB(146, 255, 255, 255)),
                       ),
                     ),
                   ),
@@ -401,11 +357,18 @@ class _AddExpenseTypeDialogState extends ConsumerState<AddExpenseTypeDialog> {
                   //   icon: const Icon(Icons.close, color: Colors.red),
                   // ),
                   IconButton(
-                    onPressed: () {
-                      submit();
-                    },
-                    icon:
-                        const Icon(Icons.check, color: Colors.green, size: 30),
+                    onPressed: (titleController.text.isEmpty ||
+                            _icon == null ||
+                            _color == null)
+                        ? null
+                        : submit,
+                    icon: Icon(Icons.check,
+                        color: (titleController.text.isEmpty ||
+                                _icon == null ||
+                                _color == null)
+                            ? Colors.grey
+                            : Colors.green,
+                        size: 30),
                   ),
                 ],
               ),

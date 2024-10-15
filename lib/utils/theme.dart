@@ -29,14 +29,14 @@ ThemeData darkTheme() {
       secondary: Color(0xFFC4D5E8),
       onPrimary: Colors.white,
       onSecondary: Colors.black,
-      surface: Color(0xFF5D7C9A),
-      onSurface: Colors.black,
+      surface: Color.fromARGB(255, 43, 43, 43),
+      onSurface: Colors.white,
     ),
-    dividerColor: const Color(0xFF163840),
+    dividerColor: const Color.fromARGB(255, 58, 58, 58),
     buttonTheme: const ButtonThemeData(
-      buttonColor: Color(0xFF5D7C9A),
+      buttonColor: Color.fromARGB(255, 71, 71, 71),
       textTheme: ButtonTextTheme.accent,
     ),
-    fontFamily: GoogleFonts.kanit().fontFamily,
+    fontFamily: GoogleFonts.asapCondensed().fontFamily,
   );
 }

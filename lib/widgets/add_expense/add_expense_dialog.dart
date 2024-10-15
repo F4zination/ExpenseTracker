@@ -3,7 +3,9 @@ import 'package:expensetracker/widgets/circle_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:expensetracker/models/expense.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_switch/flutter_switch.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rrule_generator/rrule_generator.dart';
 
 class AddExpenseDialog extends ConsumerStatefulWidget {
   const AddExpenseDialog({super.key, required this.expenseType});
@@ -19,6 +21,8 @@ class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
   final TextEditingController amountController = TextEditingController();
 
   late final ExpenseListProvider _expenseListProvider;
+  bool _recurringExpense = false;
+  String? _rrule;
 
   @override
   void dispose() {
@@ -46,14 +50,7 @@ class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
     String title = titleController.text.trim();
     double amount = this.amount;
 
-    final type = widget.expenseType;
-
-    if (title.isEmpty) {
-      title = type.name;
-    }
-
-    if (amount <= 0) {
-      amountController.clear();
+    if (title.isEmpty || amount <= 0) {
       return;
     }
 
@@ -62,6 +59,7 @@ class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
       amount: amount,
       date: DateTime.now(),
       type: widget.expenseType,
+      rrule: _rrule ?? '',
     );
 
     _expenseListProvider.addExpense(newExpense);
@@ -116,12 +114,80 @@ class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),
-                    Text(
-                      widget.expenseType.isExpense ? 'Expense' : 'Income',
-                      style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white),
+                    Padding(
+                      padding: _recurringExpense
+                          ? const EdgeInsets.symmetric(vertical: 1)
+                          : const EdgeInsets.symmetric(vertical: 8),
+                      child: Row(
+                        children: [
+                          FlutterSwitch(
+                              height: 26,
+                              width: 45,
+                              padding: 3,
+                              activeColor:
+                                  const Color.fromARGB(255, 161, 161, 161),
+                              inactiveColor:
+                                  const Color.fromARGB(255, 127, 127, 127),
+                              value: _recurringExpense,
+                              onToggle: (value) {
+                                setState(() {
+                                  _recurringExpense = value;
+                                });
+                              }),
+                          const SizedBox(width: 16),
+                          Text(_recurringExpense ? 'recurring' : 'one-time',
+                              style: const TextStyle(
+                                  color: Color.fromARGB(255, 156, 156, 156),
+                                  fontSize: 18)),
+                          const SizedBox(width: 8),
+                          _recurringExpense
+                              ? IconButton(
+                                  icon: const Icon(
+                                    Icons.calendar_month_outlined,
+                                    color: Color.fromARGB(255, 156, 156, 156),
+                                  ),
+                                  onPressed: () {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                              content: SingleChildScrollView(
+                                                child: Column(
+                                                  children: [
+                                                    RRuleGenerator(
+                                                      config:
+                                                          RRuleGeneratorConfig(),
+                                                      initialDate:
+                                                          DateTime.now(),
+                                                      initialRRule:
+                                                          'RRULE:FREQ=MONTLY;BYMONTHDAY=1',
+                                                      textDelegate:
+                                                          const GermanRRuleTextDelegate(),
+                                                      withExcludeDates: false,
+                                                      onChange: (String rrule) {
+                                                        debugPrint(
+                                                            'RRule: $rrule');
+                                                        _rrule = rrule;
+                                                      },
+                                                    ),
+                                                    IconButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      icon: const Icon(
+                                                        Icons.check,
+                                                        color: Colors.green,
+                                                        size: 30,
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                            ));
+                                  })
+                              : const SizedBox(),
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -213,10 +279,14 @@ class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
                 //   icon: const Icon(Icons.close, color: Colors.red),
                 // ),
                 IconButton(
-                  onPressed: () {
-                    submitExpense();
-                  },
-                  icon: const Icon(Icons.check, color: Colors.green, size: 30),
+                  onPressed: (titleController.text.isEmpty || amount <= 0)
+                      ? null
+                      : submitExpense,
+                  icon: Icon(Icons.check,
+                      color: (titleController.text.isEmpty || amount <= 0)
+                          ? Colors.grey
+                          : Colors.green,
+                      size: 30),
                 ),
               ],
             ),

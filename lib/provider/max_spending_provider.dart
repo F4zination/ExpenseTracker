@@ -14,11 +14,17 @@ class MaxSpendingProvider extends ChangeNotifier {
   void _loadMaxSpending() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     maxSpending = prefs.getDouble('maxSpending') ?? 600.0;
+    if (maxSpending < 0) {
+      maxSpending = 0.0;
+    }
     notifyListeners();
   }
 
   void setNewMaxSpendings(double newMaxSpendings) async {
     final prefs = await SharedPreferences.getInstance();
+    if (newMaxSpendings < 0) {
+      newMaxSpendings = 1.0;
+    }
     await prefs.setDouble('maxSpending', newMaxSpendings);
     maxSpending = newMaxSpendings;
     notifyListeners();

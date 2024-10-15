@@ -50,7 +50,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                             onPressed: () {
                               Navigator.of(context).pop();
                             },
-                            child: const Text('Cancel'),
+                            child: const Text('Cancel',
+                                style: TextStyle(color: Colors.white)),
                           ),
                           TextButton(
                             onPressed: () {
@@ -59,7 +60,8 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                               databaseController.deleteAllExpenses();
                               Navigator.of(context).pop();
                             },
-                            child: const Text('Delete'),
+                            child: const Text('Delete',
+                                style: TextStyle(color: Colors.red)),
                           ),
                         ],
                       );
@@ -83,6 +85,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       return ChangeSettingsDialog(
                         title: 'Username',
                         hintText: 'Enter your new Username',
+                        keyboardType: TextInputType.text,
                         onSave: (newUsername) {
                           ref.read(userProvider).setUsername(newUsername);
                         },
@@ -103,7 +106,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                       return ChangeSettingsDialog(
                         title: 'Max. Spending',
                         hintText: 'Enter your new Max. Spending',
+                        keyboardType: TextInputType.number,
                         onSave: (newMaxSpending) {
+                          if (double.parse(newMaxSpending) <= 0) {
+                            debugPrint('Value must be greater than 0');
+                            newMaxSpending = '1.0';
+                          }
                           ref
                               .read(maxSepndingProvider)
                               .setNewMaxSpendings(double.parse(newMaxSpending));
@@ -124,7 +132,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                   context: context,
                   applicationName: 'Expense Tracker',
                   applicationIcon: CircleAvatar(
-                    child: Image.asset('assets/images/AppIcon.png'),
+                    child: Image.asset('assets/images/AppLogo.png'),
                   ),
                   applicationVersion: '1.0.0',
                   children: [
@@ -144,29 +152,36 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                     return AlertDialog(
                       title: const Text('Acknowledgements'),
                       content: SizedBox(
-                        height: 120,
-                        child: Column(children: [
-                          const Text(
-                              'This app was created with the help of Flaticons. \n Thank you!'),
-                          TextButton(
-                            onPressed: () async {
-                              try {
-                                await launchUrl(
-                                    Uri.parse("https://www.flaticon.com/"));
-                              } catch (e) {
-                                debugPrint(e.toString());
-                              }
-                            },
-                            child: const Text('Visit Flaticons here!'),
-                          ),
-                        ]),
+                        height: 140,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                                'This app was designed by Elisa Maglio.\nThank you!'),
+                            const SizedBox(height: 10),
+                            const Text('The Icons are partly from Flaticons.'),
+                            TextButton(
+                              onPressed: () async {
+                                try {
+                                  await launchUrl(
+                                      Uri.parse("https://www.flaticon.com/"));
+                                } catch (e) {
+                                  debugPrint(e.toString());
+                                }
+                              },
+                              child: const Text('Visit Flaticons here!',
+                                  style: TextStyle(color: Colors.blue)),
+                            ),
+                          ],
+                        ),
                       ),
                       actions: [
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop();
                           },
-                          child: const Text('Close'),
+                          child: const Text('Close',
+                              style: TextStyle(color: Colors.white)),
                         ),
                       ],
                     );

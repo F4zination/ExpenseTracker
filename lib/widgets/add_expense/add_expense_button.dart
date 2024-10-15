@@ -30,6 +30,18 @@ class AddExpenseButton extends ConsumerWidget {
     return adjustedHslColor.toColor();
   }
 
+  double calculateRatio(WidgetRef ref) {
+    double divisor = ref.watch(maxSepndingProvider).getMaxSpendings;
+    if (divisor < 0) {
+      return 0.0;
+    } else {
+      return ref
+              .watch(expenseListProvider)
+              .getTotalAmountExpensesPerType(expenseType) /
+          divisor;
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
@@ -39,10 +51,7 @@ class AddExpenseButton extends ConsumerWidget {
           CircleIcon(
             color: expenseType.color,
             icon: expenseType.icon,
-            ratio: ref
-                    .watch(expenseListProvider)
-                    .getTotalAmountExpensesPerType(expenseType) /
-                ref.watch(maxSepndingProvider).getMaxSpendings,
+            ratio: calculateRatio(ref),
             onPressed: onPressed,
             onLongPress: () {
               showDialog(

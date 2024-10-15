@@ -7,6 +7,7 @@ import 'package:expensetracker/provider/expense_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Main extends ConsumerStatefulWidget {
   const Main({super.key});
@@ -34,17 +35,21 @@ class _MainState extends ConsumerState<Main> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(95, 60, 60, 60),
+      backgroundColor: const Color.fromARGB(255, 28, 28, 28),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         toolbarHeight: 80,
         title: Padding(
-          padding: const EdgeInsets.only(left: 8),
+          padding: const EdgeInsets.only(left: 8, top: 20),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Text('Hi, ${ref.watch(userProvider).getUsername}!',
-                style: const TextStyle(fontSize: 36, color: Colors.white)),
+                style: TextStyle(
+                  fontSize: 56,
+                  color: Colors.white,
+                  fontFamily: GoogleFonts.justAnotherHand().fontFamily,
+                )),
           ),
         ),
         actions: [
@@ -71,7 +76,7 @@ class _MainState extends ConsumerState<Main> {
       ),
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,
-        backgroundColor: const Color.fromARGB(0, 0, 0, 0),
+        backgroundColor: Colors.transparent,
         color: const Color.fromARGB(243, 31, 31, 31),
         buttonBackgroundColor: const Color.fromARGB(243, 55, 55, 55),
         height: 50,

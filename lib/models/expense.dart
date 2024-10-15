@@ -77,6 +77,7 @@ class Expense {
   final double amount;
   final DateTime date;
   final String attachment;
+  final String rrule;
   final ExpenseType type;
 
   Expense({
@@ -85,6 +86,7 @@ class Expense {
     required this.date,
     required this.type,
     this.attachment = 'none',
+    this.rrule = 'none',
   }) : id = _uuid.v4();
 
   Expense.withID(
@@ -93,6 +95,7 @@ class Expense {
       required this.amount,
       required this.date,
       required this.attachment,
+      required this.rrule,
       required this.type});
 
   IconPickerIcon get icon {

@@ -32,7 +32,7 @@ class DisplayExpensesCategory extends ConsumerWidget {
           height: height,
           width: MediaQuery.of(context).size.width * 0.85,
           child: Card(
-            color: const Color.fromARGB(255, 75, 75, 75),
+            color: const Color.fromARGB(255, 43, 43, 43),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(45.0),
             ),
@@ -115,6 +115,8 @@ class DisplayExpensesCategory extends ConsumerWidget {
                                               SizedBox(
                                                 width: constraints.maxWidth / 4,
                                                 child: Text(expense.title,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
                                                     style: const TextStyle(
                                                         color: Colors.white)),
                                               ),

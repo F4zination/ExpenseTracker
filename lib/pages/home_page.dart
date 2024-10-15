@@ -2,14 +2,15 @@ import 'package:expensetracker/models/expense.dart';
 import 'package:expensetracker/provider/expense_list_provider.dart';
 import 'package:expensetracker/provider/expense_types_provider.dart';
 import 'package:expensetracker/provider/max_spending_provider.dart';
-import 'package:expensetracker/provider/month_provider.dart';
 import 'package:expensetracker/widgets/add_expense/add_expense_button.dart';
 import 'package:expensetracker/widgets/add_expense/add_expense_dialog.dart';
 import 'package:expensetracker/widgets/add_expense_type/add_expense_type_dialog.dart';
 import 'package:expensetracker/widgets/circle_icon.dart';
+import 'package:expensetracker/widgets/month_dropdown_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -40,38 +41,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               const Text('Total Expenses',
                   style: TextStyle(fontSize: 32, color: Colors.white)),
               const SizedBox(height: 10),
-              Container(
-                height: 40,
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 255, 255, 255),
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: DropdownButton(
-                    icon: const Icon(Icons.keyboard_arrow_down_rounded,
-                        color: Color.fromARGB(255, 110, 110, 110)),
-                    underline: Container(),
-                    dropdownColor: const Color.fromARGB(255, 60, 60, 60),
-                    style: const TextStyle(color: Colors.white),
-                    items: ref.watch(monthProvider).existingMonths.map((e) {
-                      return DropdownMenuItem(
-                        value: e,
-                        child: Text(DateFormat('MMMM-yyyy').format(e),
-                            style: const TextStyle(color: Colors.white)),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      ref.read(monthProvider).month = value!;
-                      ref.read(monthProvider).setMonth(value);
-                    },
-                    hint: Text(
-                        DateFormat('MMMM-yyyy')
-                            .format(ref.watch(monthProvider).month),
-                        style: const TextStyle(color: Colors.black87)),
-                  ),
-                ),
-              ),
+              MonthDropdownButton(ref: ref),
               const SizedBox(height: 20),
               Align(
                 alignment: Alignment.topRight,
@@ -89,7 +59,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                       Text(
                           '${numberFormated(ref.watch(expenseListProvider.notifier).totalExpenses)} €',
                           style: const TextStyle(
-                              fontSize: 42, color: Color(0xFF59EE57))),
+                            fontSize: 45,
+                            color: Color(0xFF59EE57),
+                          )),
                     ],
                   ),
                 ),
@@ -116,7 +88,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           data: Icons.add_rounded,
                         ),
                         iconColor: Colors.white,
-                        color: const Color.fromARGB(53, 217, 217, 217),
+                        color: const Color.fromARGB(255, 43, 43, 43),
                         onPressed: () {
                           showModalBottomSheet(
                               context: context,
@@ -255,31 +227,41 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   width: constraints.maxWidth / 4,
                                   child: CircleAvatar(
                                     backgroundColor: expense.type.color,
-                                    radius: 10,
+                                    radius: 12,
                                   ),
                                 ),
                                 SizedBox(
                                   width: constraints.maxWidth / 4,
                                   child: Text(expense.title,
-                                      style:
-                                          const TextStyle(color: Colors.white)),
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 18)),
                                 ),
                                 SizedBox(
                                   width: constraints.maxWidth / 4,
                                   child: Text(
                                       DateFormat('dd.MM.yyyy')
                                           .format(expense.date),
-                                      style:
-                                          const TextStyle(color: Colors.white)),
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 18)),
                                 ),
                                 SizedBox(
                                   width: constraints.maxWidth / 4,
-                                  child: Text(
-                                      '${numberFormated(expense.amount)} €',
-                                      style: TextStyle(
-                                          color: isExpense
-                                              ? Colors.red
-                                              : Colors.green)),
+                                  child: Align(
+                                    alignment: Alignment.centerRight,
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 25.0),
+                                      child: Text(
+                                        '${numberFormated(expense.amount)} €',
+                                        style: TextStyle(
+                                            color: isExpense
+                                                ? Colors.red
+                                                : Colors.green,
+                                            fontSize: 18),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),

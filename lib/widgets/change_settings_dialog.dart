@@ -6,11 +6,13 @@ class ChangeSettingsDialog extends ConsumerStatefulWidget {
       {Key? key,
       required this.title,
       required this.hintText,
+      required this.keyboardType,
       required this.onSave})
       : super(key: key);
 
   final String title;
   final String hintText;
+  final TextInputType keyboardType;
   final void Function(dynamic) onSave;
 
   @override
@@ -42,6 +44,7 @@ class _ChangeSettingDialogState extends ConsumerState<ChangeSettingsDialog> {
       content: TextField(
         controller: textController,
         autofocus: true,
+        keyboardType: widget.keyboardType,
         decoration: InputDecoration(
           hintText: widget.hintText,
         ),
@@ -54,6 +57,10 @@ class _ChangeSettingDialogState extends ConsumerState<ChangeSettingsDialog> {
         TextButton(
           onPressed: () {
             // Assuming userProv is accessible
+            if (double.parse(textController.text) < 0) {
+              debugPrint('Value must be greater than 0');
+              return;
+            }
             widget.onSave(textController.text);
             Navigator.of(context).pop();
           },

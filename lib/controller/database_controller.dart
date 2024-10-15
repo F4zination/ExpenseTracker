@@ -44,7 +44,8 @@ class DatabaseController {
       );
       debugPrint('Created table expenseType');
       await checkAndAddColumn(db, 'expenses', 'typeID', 'TEXT');
-      await checkAndAddColumn(db, 'expenses', 'attachment', 'TEXT');
+      await checkAndAddColumn(db, 'expenses', 'attachement', 'TEXT');
+      await checkAndAddColumn(db, 'expenses', 'rrule', 'TEXT');
       await db.execute(
         'ALTER TABLE expenses DROP COLUMN type',
       );
@@ -77,12 +78,14 @@ class DatabaseController {
     // Example table creation
     switch (newVersion) {
       case 1:
+        print('Creating database version 1');
         await db.execute(
           'CREATE TABLE IF NOT EXISTS expenses(id TEXT PRIMARY KEY, title TEXT, amount REAL, date TEXT, type TEXT)',
         );
       case 2:
+        print('Creating database version 2');
         await db.execute(
-          'CREATE TABLE IF NOT EXISTS expenses(id TEXT PRIMARY KEY, title TEXT, amount REAL, date TEXT, typeID TEXT, attachement TEXT)',
+          'CREATE TABLE IF NOT EXISTS expenses(id TEXT PRIMARY KEY, title TEXT, amount REAL, date TEXT, typeID TEXT, attachement TEXT, rrule TEXT)',
         );
         await db.execute(
           'CREATE TABLE IF NOT EXISTS expenseType(id TEXT PRIMARY KEY, name TEXT, color TEXT, icon TEXT, expense TEXT)',
@@ -124,9 +127,10 @@ class DatabaseController {
         'date': expense.date.toIso8601String(),
         'typeID': expense.type.id,
         'attachement': expense.attachment,
+        'rrule': expense.rrule,
       },
     );
-    debugPrint('Added expense: ${expense.title} with amount ${expense.amount}');
+    debugPrint('Added expense: ${expense.title} with rrule ${expense.rrule}');
   }
 
   void deleteExpense(String id) async {
@@ -235,6 +239,7 @@ class DatabaseController {
         attachment: e['attachment'].toString() == 'null'
             ? ''
             : e['attachment'] as String,
+        rrule: e['rrule'].toString() == 'null' ? '' : e['rrule'] as String,
       ));
     }
 
@@ -259,6 +264,7 @@ class DatabaseController {
         attachment: e['attachment'].toString() == 'null'
             ? ''
             : e['attachment'] as String,
+        rrule: e['rrule'].toString() == 'null' ? '' : e['rrule'] as String,
       );
     }).toList();
   }
@@ -278,6 +284,7 @@ class DatabaseController {
         attachment: e['attachment'].toString() == 'null'
             ? ''
             : e['attachment'] as String,
+        rrule: e['rrule'].toString() == 'null' ? '' : e['rrule'] as String,
       );
     }).toList();
   }
@@ -301,6 +308,7 @@ class DatabaseController {
         attachment: e['attachment'].toString() == 'null'
             ? ''
             : e['attachment'] as String,
+        rrule: e['rrule'].toString() == 'null' ? '' : e['rrule'] as String,
       );
     }).toList();
   }

@@ -688,6 +688,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.5.1"
+  rrule_generator:
+    dependency: "direct main"
+    description:
+      name: rrule_generator
+      sha256: "17be17fdf07015b2ffb7285e71afaf0406962e72a8a9c41666f59edfa22b2c5d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.5"
   scope:
     dependency: transitive
     description:
