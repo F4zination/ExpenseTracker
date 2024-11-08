@@ -10,7 +10,6 @@ import 'package:expensetracker/widgets/month_dropdown_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconpicker/flutter_iconpicker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class HomePage extends ConsumerStatefulWidget {

@@ -147,6 +147,7 @@ class DatabaseController {
   void deleteAllExpenses() async {
     final db = await database;
     db.delete('expenses');
+    db.delete('expenseType');
   }
 
   Future<List<ExpenseType>> loadExpenseTypes() async {
@@ -216,6 +217,35 @@ class DatabaseController {
         'expense': type.isExpense.toString(),
       },
     );
+  }
+
+  Future<List<Expense>> loadSpecificMonthExpenses(DateTime month) async {
+    String monthString = month.month.toString().padLeft(2, '0');
+
+    final db = await database;
+    final results = await db.query(
+      'expenses',
+      where: 'strftime(\'%m-%Y\', date) = ?',
+      whereArgs: [monthString],
+    );
+
+    List<Expense> listResult = [];
+    // using print to show the results, wich are in a bad format for debugPrint
+    for (var e in results) {
+      listResult.add(Expense.withID(
+        id: e['id'] as String,
+        title: e['title'] as String,
+        amount: e['amount'] as double,
+        date: DateTime.parse(e['date'] as String),
+        type: await loadExpenseType(e['typeID'] as String),
+        attachment: e['attachment'].toString() == 'null'
+            ? ''
+            : e['attachment'] as String,
+        rrule: e['rrule'].toString() == 'null' ? '' : e['rrule'] as String,
+      ));
+    }
+
+    return Future.value(listResult);
   }
 
   Future<List<Expense>> loadCurrentMonthExpenses() async {

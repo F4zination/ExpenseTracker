@@ -35,8 +35,7 @@ class MonthDropdownButton extends StatelessWidget {
             );
           }).toList(),
           onChanged: (value) {
-            ref.read(monthProvider).month = value!;
-            ref.read(monthProvider).setMonth(value);
+            ref.read(monthProvider).setMonth(value!, ref);
           },
           hint: Text(
               DateFormat('MMMM-yyyy').format(ref.watch(monthProvider).month),

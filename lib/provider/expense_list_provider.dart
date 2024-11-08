@@ -23,6 +23,14 @@ class ExpenseListProvider extends ChangeNotifier {
             previousValue + (element.type.isExpense ? element.amount : 0.0));
   }
 
+  void updateExpenseList(DateTime month) {
+    debugPrint('Updating expense list for month: $month');
+    _databaseController.loadSpecificMonthExpenses(month).then((value) {
+      _expenses = value;
+      notifyListeners();
+    });
+  }
+
   double getTotalAmountExpensesPerType(ExpenseType type) {
     final expensesOfType =
         _expenses.where((element) => element.type.name == type.name).toList();
