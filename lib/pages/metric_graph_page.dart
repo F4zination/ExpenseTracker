@@ -1,9 +1,9 @@
 import 'package:expensetracker/widgets/graph_cards/bar_chart_category.dart';
 import 'package:expensetracker/widgets/graph_cards/graph_card.dart';
-import 'package:expensetracker/widgets/graph_cards/line_chart_total.dart';
 import 'package:expensetracker/widgets/month_dropdown_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:expensetracker/provider/month_provider.dart';
 
 class MetricGraphScreen extends ConsumerStatefulWidget {
   const MetricGraphScreen({super.key});
@@ -28,7 +28,13 @@ class _MetricGraphScreenState extends ConsumerState<MetricGraphScreen> {
               const Text('Graphs',
                   style: TextStyle(fontSize: 32, color: Colors.white)),
               const SizedBox(height: 10),
-              MonthDropdownButton(ref: ref),
+              MonthDropdownButton(
+                month: ref.watch(monthProvider).month,
+                existingMonths: ref.watch(monthProvider).existingMonths,
+                onChange: (value) {
+                  ref.read(monthProvider.notifier).setMonth(value);
+                },
+              ),
               const SizedBox(height: 8),
             ],
           ),

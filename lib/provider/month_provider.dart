@@ -1,5 +1,4 @@
 import 'package:expensetracker/controller/database_controller.dart';
-import 'package:expensetracker/provider/expense_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -23,11 +22,12 @@ class MonthProvider extends ChangeNotifier {
     month = prefs.getString('month') != null
         ? DateTime.parse(prefs.getString('month')!)
         : DateTime.now();
-    notifyListeners();
     existingMonths = await databaseController.loadAllExistingMonths();
+    notifyListeners();
   }
 
-  void setMonth(DateTime month, WidgetRef ref) async {
+  void setMonth(DateTime month) async {
+    debugPrint('setting month to $month');
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('month', month.toIso8601String());
     month = month;

@@ -56,12 +56,13 @@ class _ChangeSettingDialogState extends ConsumerState<ChangeSettingsDialog> {
         ),
         TextButton(
           onPressed: () {
-            // Assuming userProv is accessible
-            if (double.parse(textController.text) < 0) {
-              debugPrint('Value must be greater than 0');
+            if (textController.text.isEmpty) {
               return;
+            } else if (widget.keyboardType == TextInputType.number) {
+              widget.onSave(double.parse(textController.text));
+            } else if (widget.keyboardType == TextInputType.text) {
+              widget.onSave(textController.text);
             }
-            widget.onSave(textController.text);
             Navigator.of(context).pop();
           },
           child: const Text('Save', style: TextStyle(color: Colors.white)),

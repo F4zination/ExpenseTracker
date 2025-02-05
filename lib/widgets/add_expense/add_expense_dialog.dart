@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rrule_generator/rrule_generator.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 class AddExpenseDialog extends ConsumerStatefulWidget {
   const AddExpenseDialog({super.key, required this.expenseType});
@@ -34,6 +35,7 @@ class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
   @override
   void initState() {
     super.initState();
+    initializeDateFormatting();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _expenseListProvider = ref.watch(expenseListProvider);
     });
@@ -161,7 +163,7 @@ class _AddExpenseState extends ConsumerState<AddExpenseDialog> {
                                                       initialRRule:
                                                           'RRULE:FREQ=MONTLY;BYMONTHDAY=1',
                                                       textDelegate:
-                                                          const GermanRRuleTextDelegate(),
+                                                          const EnglishRRuleTextDelegate(),
                                                       withExcludeDates: false,
                                                       onChange: (String rrule) {
                                                         debugPrint(

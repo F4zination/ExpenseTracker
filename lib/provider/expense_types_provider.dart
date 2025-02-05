@@ -49,7 +49,7 @@ class ExpenseTypesProvider with ChangeNotifier {
   Future<void> fetchExpenseTypes() async {
     try {
       // Fetch expense types from the database using the database controller
-      _expenseTypes = await _databaseController.loadExpenseTypes();
+      _expenseTypes = await _databaseController.loadAllExpenseTypes();
       notifyListeners();
     } catch (error) {
       // Handle any errors that occur during fetching

@@ -2,6 +2,7 @@ import 'package:expensetracker/models/expense.dart';
 import 'package:expensetracker/provider/expense_list_provider.dart';
 import 'package:expensetracker/provider/expense_types_provider.dart';
 import 'package:expensetracker/provider/max_spending_provider.dart';
+import 'package:expensetracker/provider/month_provider.dart';
 import 'package:expensetracker/widgets/add_expense/add_expense_button.dart';
 import 'package:expensetracker/widgets/add_expense/add_expense_dialog.dart';
 import 'package:expensetracker/widgets/add_expense_type/add_expense_type_dialog.dart';
@@ -40,7 +41,13 @@ class _HomePageState extends ConsumerState<HomePage> {
               const Text('Total Expenses',
                   style: TextStyle(fontSize: 32, color: Colors.white)),
               const SizedBox(height: 10),
-              MonthDropdownButton(ref: ref),
+              MonthDropdownButton(
+                month: ref.watch(monthProvider).month,
+                existingMonths: ref.watch(monthProvider).existingMonths,
+                onChange: (value) {
+                  ref.read(monthProvider.notifier).setMonth(value);
+                },
+              ),
               const SizedBox(height: 20),
               Align(
                 alignment: Alignment.topRight,

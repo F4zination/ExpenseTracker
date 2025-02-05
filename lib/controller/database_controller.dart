@@ -150,7 +150,7 @@ class DatabaseController {
     db.delete('expenseType');
   }
 
-  Future<List<ExpenseType>> loadExpenseTypes() async {
+  Future<List<ExpenseType>> loadAllExpenseTypes() async {
     final db = await database;
     final results = await db.query('expenseType');
 

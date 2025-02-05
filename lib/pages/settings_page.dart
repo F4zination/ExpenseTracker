@@ -108,13 +108,13 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
                         hintText: 'Enter your new Max. Spending',
                         keyboardType: TextInputType.number,
                         onSave: (newMaxSpending) {
-                          if (double.parse(newMaxSpending) <= 0) {
+                          if (newMaxSpending <= 0) {
                             debugPrint('Value must be greater than 0');
                             newMaxSpending = '1.0';
                           }
                           ref
                               .read(maxSepndingProvider)
-                              .setNewMaxSpendings(double.parse(newMaxSpending));
+                              .setNewMaxSpendings(newMaxSpending);
                         },
                       );
                     },

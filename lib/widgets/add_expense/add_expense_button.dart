@@ -1,7 +1,6 @@
 import 'package:expensetracker/models/expense.dart';
 import 'package:expensetracker/provider/expense_list_provider.dart';
 import 'package:expensetracker/provider/expense_types_provider.dart';
-import 'package:expensetracker/provider/max_spending_provider.dart';
 import 'package:expensetracker/widgets/circle_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,10 +30,12 @@ class AddExpenseButton extends ConsumerWidget {
   }
 
   double calculateRatio(WidgetRef ref) {
-    double divisor = ref.watch(maxSepndingProvider).getMaxSpendings;
-    if (divisor < 0) {
+    double divisor = ref.watch(expenseListProvider).totalExpenses;
+    if (divisor <= 0) {
       return 0.0;
     } else {
+      debugPrint(
+          'trying to divide ${ref.watch(expenseListProvider).getTotalAmountExpensesPerType(expenseType)} by $divisor');
       return ref
               .watch(expenseListProvider)
               .getTotalAmountExpensesPerType(expenseType) /

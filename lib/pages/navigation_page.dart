@@ -2,6 +2,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:expensetracker/pages/home_page.dart';
 import 'package:expensetracker/pages/metric_category_page.dart';
 import 'package:expensetracker/pages/metric_graph_page.dart';
+import 'package:expensetracker/provider/month_provider.dart';
 import 'package:expensetracker/provider/user_provider.dart';
 import 'package:expensetracker/provider/expense_list_provider.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ class _MainState extends ConsumerState<Main> {
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.watch(expenseListProvider.notifier).addListener(() {
+        ref.read(monthProvider.notifier).setMonth(DateTime.now());
         setState(() {});
       });
     });

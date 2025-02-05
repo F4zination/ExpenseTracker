@@ -1,18 +1,22 @@
-import 'package:expensetracker/provider/month_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 class MonthDropdownButton extends StatelessWidget {
   const MonthDropdownButton({
     super.key,
-    required this.ref,
+    required this.month,
+    required this.existingMonths,
+    required this.onChange,
   });
 
-  final WidgetRef ref;
+  final DateTime month;
+  final Function onChange;
+  final List<DateTime> existingMonths;
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(existingMonths.toString());
+
     return Container(
       height: 40,
       decoration: BoxDecoration(
@@ -27,7 +31,7 @@ class MonthDropdownButton extends StatelessWidget {
           underline: Container(),
           dropdownColor: const Color.fromARGB(255, 60, 60, 60),
           style: const TextStyle(color: Colors.white),
-          items: ref.watch(monthProvider).existingMonths.map((e) {
+          items: existingMonths.map((e) {
             return DropdownMenuItem(
               value: e,
               child: Text(DateFormat('MMMM-yyyy').format(e),
@@ -35,10 +39,9 @@ class MonthDropdownButton extends StatelessWidget {
             );
           }).toList(),
           onChanged: (value) {
-            ref.read(monthProvider).setMonth(value!, ref);
+            onChange(value);
           },
-          hint: Text(
-              DateFormat('MMMM-yyyy').format(ref.watch(monthProvider).month),
+          hint: Text(DateFormat('MMMM-yyyy').format(month),
               style: const TextStyle(color: Colors.white70)),
         ),
       ),

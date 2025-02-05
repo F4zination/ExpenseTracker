@@ -72,7 +72,13 @@ class _MetricCategoryScreenState extends ConsumerState<MetricCategoryScreen> {
               const Text('Categories',
                   style: TextStyle(fontSize: 32, color: Colors.white)),
               const SizedBox(height: 10),
-              MonthDropdownButton(ref: ref),
+              MonthDropdownButton(
+                month: ref.watch(monthProvider).month,
+                existingMonths: ref.watch(monthProvider).existingMonths,
+                onChange: (value) {
+                  ref.read(monthProvider.notifier).setMonth(value);
+                },
+              ),
               const SizedBox(height: 8),
             ],
           ),
